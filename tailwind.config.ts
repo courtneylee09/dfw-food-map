@@ -11,7 +11,6 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
-        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
@@ -86,6 +85,11 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+      },
+      fontSize: {
+        base: ['1.0625rem', { lineHeight: '1.7' }],
+        lg: ['1.125rem', { lineHeight: '1.7' }],
+        xl: ['1.25rem', { lineHeight: '1.6' }],
       },
       keyframes: {
         "accordion-down": {
