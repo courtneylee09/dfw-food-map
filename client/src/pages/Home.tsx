@@ -131,6 +131,11 @@ export default function Home() {
           <MapPin className="w-5 h-5 mr-2" />
           Use My Location
         </Button>
+
+        <FilterPills
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
       </div>
 
       <div className="flex-1 relative overflow-hidden">
@@ -155,13 +160,6 @@ export default function Home() {
             />
           </div>
         )}
-      </div>
-
-      <div className="border-t p-3">
-        <FilterPills
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-        />
       </div>
 
       <div className="border-t p-3 flex gap-2">
