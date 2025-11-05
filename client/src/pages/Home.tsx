@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MapPin, List, Plus } from 'lucide-react';
+import { MapPin, List } from 'lucide-react';
 import ResourceMap from '@/components/ResourceMap';
 import FilterPills, { FilterType } from '@/components/FilterPills';
 import ResourceList from '@/components/ResourceList';
 import ResourceDetail from '@/components/ResourceDetail';
-import SubmissionForm from '@/components/SubmissionForm';
 import AddToHomeModal from '@/components/AddToHomeModal';
 import { FoodResource } from '@shared/schema';
 
-type View = 'map' | 'list' | 'detail' | 'submit';
+type View = 'map' | 'list' | 'detail';
 
 export default function Home() {
   const [view, setView] = useState<View>('map');
@@ -109,16 +108,7 @@ export default function Home() {
       <ResourceDetail
         resource={selectedResource}
         onBack={() => setView('map')}
-        onSuggestUpdate={() => setView('submit')}
-      />
-    );
-  }
-
-  if (view === 'submit') {
-    return (
-      <SubmissionForm
-        onBack={() => setView('map')}
-        onSubmit={(data) => console.log('Submission:', data)}
+        onSuggestUpdate={() => console.log('Suggest update clicked')}
       />
     );
   }
@@ -190,15 +180,6 @@ export default function Home() {
         >
           <List className="w-5 h-5 mr-2" />
           List
-        </Button>
-        <Button
-          variant="outline"
-          className="flex-1 min-h-11 text-base font-medium"
-          onClick={() => setView('submit')}
-          data-testid="button-add-resource"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add
         </Button>
       </div>
 
