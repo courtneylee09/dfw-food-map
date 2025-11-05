@@ -132,10 +132,26 @@ export default function Home() {
           Use My Location
         </Button>
 
-        <FilterPills
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-        />
+        <div className="flex gap-2">
+          <Button
+            variant={view === 'map' ? 'default' : 'outline'}
+            className="flex-1 min-h-11 text-base font-medium"
+            onClick={() => setView('map')}
+            data-testid="button-view-map"
+          >
+            <MapPin className="w-5 h-5 mr-2" />
+            Map
+          </Button>
+          <Button
+            variant={view === 'list' ? 'default' : 'outline'}
+            className="flex-1 min-h-11 text-base font-medium"
+            onClick={() => setView('list')}
+            data-testid="button-view-list"
+          >
+            <List className="w-5 h-5 mr-2" />
+            List
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 relative overflow-hidden">
@@ -162,25 +178,11 @@ export default function Home() {
         )}
       </div>
 
-      <div className="border-t p-3 flex gap-2">
-        <Button
-          variant={view === 'map' ? 'default' : 'outline'}
-          className="flex-1 min-h-11 text-base font-medium"
-          onClick={() => setView('map')}
-          data-testid="button-view-map"
-        >
-          <MapPin className="w-5 h-5 mr-2" />
-          Map
-        </Button>
-        <Button
-          variant={view === 'list' ? 'default' : 'outline'}
-          className="flex-1 min-h-11 text-base font-medium"
-          onClick={() => setView('list')}
-          data-testid="button-view-list"
-        >
-          <List className="w-5 h-5 mr-2" />
-          List
-        </Button>
+      <div className="border-t p-3">
+        <FilterPills
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
       </div>
 
       <AddToHomeModal
