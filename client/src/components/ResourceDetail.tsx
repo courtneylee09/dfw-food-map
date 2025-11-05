@@ -7,10 +7,9 @@ import { MapPin, Clock, ArrowLeft } from 'lucide-react';
 interface ResourceDetailProps {
   resource: FoodResource;
   onBack: () => void;
-  onSuggestUpdate: () => void;
 }
 
-export default function ResourceDetail({ resource, onBack, onSuggestUpdate }: ResourceDetailProps) {
+export default function ResourceDetail({ resource, onBack }: ResourceDetailProps) {
   const openInMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.address)}`;
     window.open(url, '_blank');
@@ -89,17 +88,6 @@ export default function ResourceDetail({ resource, onBack, onSuggestUpdate }: Re
             </div>
           </Card>
         </div>
-      </div>
-
-      <div className="p-4 border-t">
-        <Button
-          className="w-full min-h-12 text-base font-bold"
-          variant="outline"
-          onClick={onSuggestUpdate}
-          data-testid="button-suggest-update"
-        >
-          Suggest an Update
-        </Button>
       </div>
     </div>
   );
