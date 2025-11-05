@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { MapPin, List } from 'lucide-react';
 import ResourceMap from '@/components/ResourceMap';
@@ -8,7 +7,6 @@ import ResourceList from '@/components/ResourceList';
 import ResourceDetail from '@/components/ResourceDetail';
 import AddToHomeModal from '@/components/AddToHomeModal';
 import { FoodResource } from '@shared/schema';
-import { queryClient, apiRequest } from '@/lib/queryClient';
 
 type View = 'map' | 'list' | 'detail';
 
@@ -20,33 +18,48 @@ export default function Home() {
   const [showAddToHome, setShowAddToHome] = useState(false);
   const [hasClickedResource, setHasClickedResource] = useState(false);
 
-  const { data: resources = [], isLoading } = useQuery<FoodResource[]>({
-    queryKey: ['/api/resources'],
-  });
-
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: async ({ id, isFavorite }: { id: string; isFavorite: boolean }) => {
-      return await apiRequest(`/api/resources/${id}/favorite`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isFavorite }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  const resources: FoodResource[] = [
+    {
+      id: '1',
+      name: 'Gleaners Community Food Bank',
+      address: '2131 Beaufait St, Detroit, MI 48207',
+      phone: '(313) 923-3535',
+      hours: 'Mon-Fri 9am-5pm',
+      type: 'Food Bank',
+      latitude: 42.3584,
+      longitude: -83.0408,
+      isOpen: true,
+      isFavorite: false,
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/resources'] });
+    {
+      id: '2',
+      name: 'St. Peter & Paul Soup Kitchen',
+      address: '629 Madison St, Detroit, MI 48226',
+      phone: '(313) 961-3022',
+      hours: 'Daily 11am-1pm',
+      type: 'Soup Kitchen',
+      latitude: 42.3298,
+      longitude: -83.0515,
+      isOpen: true,
+      isFavorite: false,
     },
-  });
-
-  const handleToggleFavorite = (id: string, isFavorite: boolean) => {
-    toggleFavoriteMutation.mutate({ id, isFavorite });
-  };
+    {
+      id: '3',
+      name: 'Community Meal Program',
+      address: '1234 Main St, Detroit, MI 48201',
+      phone: '(313) 555-0100',
+      hours: 'Mon-Wed-Fri 5pm-7pm',
+      type: 'Soup Kitchen',
+      latitude: 42.3314,
+      longitude: -83.0458,
+      isOpen: false,
+      isFavorite: false,
+    },
+  ];
 
   const filteredResources = resources.filter(resource => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Open Now') return resource.isOpen;
-    if (activeFilter === 'Favorites') return resource.isFavorite;
     return resource.type === activeFilter;
   });
 
@@ -79,16 +92,7 @@ export default function Home() {
         resource={selectedResource}
         onBack={() => setView('map')}
         onSuggestUpdate={() => console.log('Suggest update clicked')}
-        onToggleFavorite={handleToggleFavorite}
       />
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-lg text-muted-foreground">Loading resources...</p>
-      </div>
     );
   }
 

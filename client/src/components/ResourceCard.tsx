@@ -1,21 +1,14 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MapPin, Heart } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
 
 interface ResourceCardProps {
   resource: FoodResource;
   onClick?: () => void;
-  onToggleFavorite?: (id: string, isFavorite: boolean) => void;
 }
 
-export default function ResourceCard({ resource, onClick, onToggleFavorite }: ResourceCardProps) {
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleFavorite?.(resource.id, !resource.isFavorite);
-  };
-
+export default function ResourceCard({ resource, onClick }: ResourceCardProps) {
   return (
     <Card 
       className="p-4 hover-elevate cursor-pointer active-elevate-2"
@@ -39,18 +32,7 @@ export default function ResourceCard({ resource, onClick, onToggleFavorite }: Re
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleFavoriteClick}
-            className="h-9 w-9"
-            data-testid={`button-favorite-${resource.id}`}
-          >
-            <Heart
-              className={`w-5 h-5 ${resource.isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'}`}
-            />
-          </Button>
+        <div className="flex-shrink-0">
           {resource.isOpen ? (
             <Badge 
               className="bg-primary text-primary-foreground font-bold whitespace-nowrap"

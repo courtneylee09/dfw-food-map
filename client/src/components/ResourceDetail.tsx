@@ -2,16 +2,15 @@ import { FoodResource } from '@shared/schema';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { MapPin, Clock, ArrowLeft, Heart } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft } from 'lucide-react';
 
 interface ResourceDetailProps {
   resource: FoodResource;
   onBack: () => void;
   onSuggestUpdate: () => void;
-  onToggleFavorite?: (id: string, isFavorite: boolean) => void;
 }
 
-export default function ResourceDetail({ resource, onBack, onSuggestUpdate, onToggleFavorite }: ResourceDetailProps) {
+export default function ResourceDetail({ resource, onBack, onSuggestUpdate }: ResourceDetailProps) {
   const openInMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.address)}`;
     window.open(url, '_blank');
@@ -19,28 +18,16 @@ export default function ResourceDetail({ resource, onBack, onSuggestUpdate, onTo
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="p-4 border-b flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold">Resource Details</h1>
-        </div>
+      <div className="p-4 border-b flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onToggleFavorite?.(resource.id, !resource.isFavorite)}
-          data-testid="button-favorite-detail"
+          onClick={onBack}
+          data-testid="button-back"
         >
-          <Heart
-            className={`w-6 h-6 ${resource.isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'}`}
-          />
+          <ArrowLeft className="w-5 h-5" />
         </Button>
+        <h1 className="text-xl font-bold">Resource Details</h1>
       </div>
 
       <div className="flex-1 overflow-auto">

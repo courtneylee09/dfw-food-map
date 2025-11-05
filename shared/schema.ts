@@ -13,7 +13,6 @@ export const foodResources = pgTable("food_resources", {
   hours: text("hours"),
   isOpen: boolean("is_open").default(false),
   distance: text("distance"),
-  isFavorite: boolean("is_favorite").default(false),
 });
 
 export const submissions = pgTable("submissions", {
