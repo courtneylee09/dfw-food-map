@@ -75,26 +75,26 @@ export default function Home() {
   return (
     <div className="h-screen-safe flex flex-col bg-background overflow-hidden">
       <div className="flex-none p-3 border-b space-y-2">
-        <div className="text-center relative">
+        <div className="relative flex items-center justify-center mb-1">
           <img 
             src={logoImage} 
             alt="Food in the D" 
-            className="mx-auto w-40 h-auto mb-1"
+            className="w-40 h-auto"
             data-testid="img-logo"
           />
           <Button
             size="icon"
             variant="ghost"
-            className="absolute top-0 right-0 bg-[#114121] text-[#fff]"
+            className="absolute right-0 bg-[#114121] text-[#fff]"
             onClick={() => setLocation('/submit')}
             data-testid="button-add-resource"
           >
             <Plus className="w-6 h-6" />
           </Button>
-          <p className="text-base text-muted-foreground">
-            Find free meals and groceries near you
-          </p>
         </div>
+        <p className="text-base text-muted-foreground text-center">
+          Find free meals and groceries near you
+        </p>
         
         <Button
           onClick={handleUseLocation}
