@@ -27,45 +27,53 @@ export default function AddressAutocomplete({
 
     const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
     
+    console.log('Initializing Geoapify with API key:', apiKey ? 'Present' : 'Missing');
+    
     if (!apiKey) {
       console.warn('Geoapify API key not found. Address autocomplete will not work.');
       return;
     }
 
-    const autocomplete = new GeocoderAutocomplete(
-      containerRef.current,
-      apiKey,
-      {
-        placeholder,
-        type: 'amenity',
-        lang: 'en',
-        filter: {
-          countrycode: ['us'],
-        },
-        bias: {
-          countrycode: ['us'],
-          proximity: { lat: 42.3314, lon: -83.0458 },
-        },
-      }
-    );
-
-    autocomplete.on('select', (location: any) => {
-      if (location?.properties) {
-        const formatted = location.properties.formatted || location.properties.address_line1;
-        const lat = location.properties.lat;
-        const lon = location.properties.lon;
-        
-        if (formatted && lat && lon) {
-          onSelect({ formatted, lat, lon });
+    try {
+      const autocomplete = new GeocoderAutocomplete(
+        containerRef.current,
+        apiKey,
+        {
+          placeholder,
+          lang: 'en',
+          filter: {
+            countrycode: ['us'],
+          },
+          bias: {
+            countrycode: ['us'],
+            proximity: { lat: 42.3314, lon: -83.0458 },
+          },
         }
-      }
-    });
+      );
 
-    autocompleteRef.current = autocomplete;
+      console.log('Geoapify autocomplete initialized successfully');
 
-    return () => {
-      autocomplete.off('select');
-    };
+      autocomplete.on('select', (location: any) => {
+        console.log('Location selected:', location);
+        if (location?.properties) {
+          const formatted = location.properties.formatted || location.properties.address_line1;
+          const lat = location.properties.lat;
+          const lon = location.properties.lon;
+          
+          if (formatted && lat && lon) {
+            onSelect({ formatted, lat, lon });
+          }
+        }
+      });
+
+      autocompleteRef.current = autocomplete;
+
+      return () => {
+        autocomplete.off('select');
+      };
+    } catch (error) {
+      console.error('Error initializing Geoapify autocomplete:', error);
+    }
   }, [onSelect, placeholder]);
 
   return (
