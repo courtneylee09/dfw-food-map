@@ -104,3 +104,5 @@ Preferred communication style: Simple, everyday language.
 **Design Token Approach**: Custom CSS variables in `index.css` for theme colors rather than hardcoded Tailwind values, enabling potential dark mode support and consistent color application across components.
 
 **No Authentication System**: Intentionally omitted to reduce barriers to access. Users can view resources immediately without accounts, supporting the mutual aid mission.
+
+**Mobile-First Responsiveness**: Optimized for iPhone 15 Safari with dynamic viewport height (`100dvh`) support to handle collapsing address bars. Custom `h-screen-safe` utility class and `--app-height` CSS variable ensure proper full-screen layouts on mobile. All interactive elements meet 44px minimum touch target size (Apple's recommended guideline). Horizontal scrolling prevented via `overflow-x-hidden` on body and root elements. Filter pills use horizontal scroll with snap points for mobile-friendly navigation.

@@ -20,8 +20,8 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
       <div className="p-4 border-b flex items-center gap-3">
         <Button
           variant="ghost"
-          size="icon"
           onClick={onBack}
+          className="min-h-11 min-w-11 p-0"
           data-testid="button-back"
         >
           <ArrowLeft className="w-5 h-5" />
