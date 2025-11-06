@@ -73,7 +73,6 @@ export default function Home() {
     <div className="h-screen-safe flex flex-col bg-background overflow-hidden">
       <div className="flex-none p-3 border-b space-y-2">
         <div className="text-center">
-          <h1 className="text-xl font-bold mb-1">Detroit Food Resources</h1>
           <p className="text-base text-muted-foreground">
             Find free meals and groceries near you
           </p>
