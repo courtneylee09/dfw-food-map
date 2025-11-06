@@ -87,7 +87,7 @@ export default function Home() {
         
         <Button
           onClick={handleUseLocation}
-          className="w-full min-h-11 text-base font-bold"
+          className="w-full min-h-11 text-base font-medium"
           data-testid="button-use-location"
         >
           <Crosshair className="w-5 h-5 mr-2" />
