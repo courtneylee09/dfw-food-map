@@ -8,20 +8,15 @@ interface AddToHomeModalProps {
 }
 
 export default function AddToHomeModal({ isOpen, onClose }: AddToHomeModalProps) {
-  const handleAddToHome = () => {
-    console.log('Add to home screen clicked');
-    onClose();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md w-[calc(100%-2rem)]" data-testid="modal-add-to-home">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            Add to Home Screen
+            Quick Access Tip
           </DialogTitle>
           <DialogDescription className="text-center text-base pt-2">
-            Access food resources faster by adding this app to your home screen.
+            Add this app to your home screen for faster access to food resources.
           </DialogDescription>
         </DialogHeader>
         
@@ -31,23 +26,22 @@ export default function AddToHomeModal({ isOpen, onClose }: AddToHomeModalProps)
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Button
-            onClick={handleAddToHome}
-            className="w-full min-h-12 text-base font-bold"
-            data-testid="button-add-to-home"
-          >
-            Add to Home Screen
-          </Button>
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            className="w-full min-h-12 text-base"
-            data-testid="button-maybe-later"
-          >
-            Maybe Later
-          </Button>
+        <div className="space-y-3 text-base">
+          <p className="font-semibold">On iPhone (Safari):</p>
+          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+            <li>Tap the Share button at the bottom of the screen</li>
+            <li>Scroll down and tap "Add to Home Screen"</li>
+            <li>Tap "Add" in the top right corner</li>
+          </ol>
         </div>
+
+        <Button
+          onClick={onClose}
+          className="w-full min-h-12 text-base font-bold"
+          data-testid="button-okay"
+        >
+          Okay
+        </Button>
       </DialogContent>
     </Dialog>
   );
