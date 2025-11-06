@@ -5,7 +5,7 @@
 /* Mobile-safe viewport heights for iOS Safari */
 :root {
   --app-height: 100vh;
-  --app-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  --app-height: 100dvh; /* Dynamic viewport height for mobile browsers */ --button-outline: rgba(0,0,0, .10); --badge-outline: rgba(0,0,0, .05); --opaque-button-border-intensity: -8; --elevate-1: rgba(0,0,0, .03); --elevate-2: rgba(0,0,0, .08); --background: hsl(56deg 100% 97.06%); --foreground: hsl(30 10% 10%); --border: hsl(40 8% 82%); --card: hsl(38 10% 95%); --card-foreground: hsl(30 10% 10%); --card-border: hsl(38 10% 86%); --sidebar: hsl(36 5% 92%); --sidebar-foreground: hsl(30 8% 12%); --sidebar-border: hsl(36 5% 86%); --sidebar-primary: hsl(140 59% 16%); --sidebar-primary-foreground: hsl(140 59% 98%); --sidebar-accent: hsl(38 8% 86%); --sidebar-accent-foreground: hsl(30 8% 15%); --sidebar-ring: hsl(140 59% 20%); --popover: hsl(36 6% 90%); --popover-foreground: hsl(30 8% 12%); --popover-border: hsl(36 6% 84%); --primary: hsl(140 59% 16%); --primary-foreground: hsl(140 59% 98%); --secondary: hsl(36 12% 80%); --secondary-foreground: hsl(30 10% 12%); --muted: hsl(38 12% 85%); --muted-foreground: hsl(30 8% 38%); --accent: hsl(38 18% 82%); --accent-foreground: hsl(30 10% 15%); --destructive: hsl(12 68% 32%); --destructive-foreground: hsl(12 68% 98%); --input: hsl(30 8% 65%); --ring: hsl(140 59% 20%); --chart-1: hsl(145 50% 32%); --chart-2: hsl(32 55% 38%); --chart-3: hsl(185 45% 35%); --chart-4: hsl(25 60% 40%); --chart-5: hsl(160 42% 30%); --font-sans: Inter, system-ui, -apple-system, sans-serif; --font-serif: Georgia, Merriweather, serif; --font-mono: Menlo, monospace; --radius: .5rem; --shadow-2xs: 0px 2px 0px 0px hsl(30 8% 12% / 0.00); --shadow-xs: 0px 2px 0px 0px hsl(30 8% 12% / 0.00); --shadow-sm: 0px 2px 0px 0px hsl(30 8% 12% / 0.00), 0px 1px 2px -1px hsl(30 8% 12% / 0.00); --shadow: 0px 2px 0px 0px hsl(30 8% 12% / 0.00), 0px 1px 2px -1px hsl(30 8% 12% / 0.00); --shadow-md: 0px 2px 0px 0px hsl(30 8% 12% / 0.00), 0px 2px 4px -1px hsl(30 8% 12% / 0.00); --shadow-lg: 0px 2px 0px 0px hsl(30 8% 12% / 0.00), 0px 4px 6px -1px hsl(30 8% 12% / 0.00); --shadow-xl: 0px 2px 0px 0px hsl(30 8% 12% / 0.00), 0px 8px 10px -1px hsl(30 8% 12% / 0.00); --shadow-2xl: 0px 2px 0px 0px hsl(30 8% 12% / 0.00); --tracking-normal: 0em; --spacing: 0.25rem; --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha); --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
 /* LIGHT MODE */
@@ -20,7 +20,7 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 80deg 100% 97.06%;
+  --background: 56deg 100% 97.06%;
 
   --foreground: 30 10% 10%;
 
