@@ -152,6 +152,8 @@ export default function SubmitResource() {
                     <FormLabel>Address</FormLabel>
                     <FormControl>
                       <AddressAutocomplete
+                        value={field.value}
+                        onChange={field.onChange}
                         onSelect={(location) => {
                           form.setValue('address', location.formatted);
                           form.setValue('latitude', location.lat.toString());
