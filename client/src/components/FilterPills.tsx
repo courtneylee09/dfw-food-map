@@ -20,7 +20,7 @@ export default function FilterPills({ onFilterChange, activeFilter }: FilterPill
         <Badge
           key={filter}
           variant={activeFilter === filter ? "default" : "outline"}
-          className="cursor-pointer whitespace-nowrap px-4 py-2 text-base font-medium min-h-10 snap-start"
+          className="cursor-pointer whitespace-nowrap px-4 py-2 text-base font-medium min-h-11 snap-start flex items-center"
           onClick={() => onFilterChange(filter)}
           data-testid={`filter-${filter.toLowerCase().replace(/\s+/g, '-')}`}
         >
