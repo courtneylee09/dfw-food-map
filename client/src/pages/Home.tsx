@@ -28,7 +28,6 @@ export default function Home() {
 
   const filteredResources = resources.filter(resource => {
     if (activeFilter === 'All') return true;
-    if (activeFilter === 'Open Now') return resource.isOpen;
     return resource.type === activeFilter;
   });
 

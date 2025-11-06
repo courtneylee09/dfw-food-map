@@ -1,14 +1,14 @@
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 
-export type FilterType = 'All' | 'Open Now' | 'Community Fridge' | 'Hot Meal' | 'Food Pantry';
+export type FilterType = 'All' | 'Community Fridge' | 'Hot Meal' | 'Food Pantry';
 
 interface FilterPillsProps {
   onFilterChange: (filter: FilterType) => void;
   activeFilter: FilterType;
 }
 
-const filters: FilterType[] = ['All', 'Open Now', 'Community Fridge', 'Hot Meal', 'Food Pantry'];
+const filters: FilterType[] = ['All', 'Community Fridge', 'Hot Meal', 'Food Pantry'];
 
 export default function FilterPills({ onFilterChange, activeFilter }: FilterPillsProps) {
   return (

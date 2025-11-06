@@ -11,7 +11,6 @@ export const foodResources = pgTable("food_resources", {
   latitude: text("latitude").notNull(),
   longitude: text("longitude").notNull(),
   hours: text("hours"),
-  isOpen: boolean("is_open").default(false),
   distance: text("distance"),
 });
 

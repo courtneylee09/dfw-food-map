@@ -32,20 +32,9 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-4">
           <div>
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <h2 className="text-2xl font-bold leading-tight" data-testid="text-resource-name">
-                {resource.name}
-              </h2>
-              {resource.isOpen ? (
-                <Badge className="bg-primary text-primary-foreground font-bold text-sm whitespace-nowrap">
-                  OPEN NOW
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="border-destructive text-destructive font-bold text-sm whitespace-nowrap">
-                  CLOSED
-                </Badge>
-              )}
-            </div>
+            <h2 className="text-2xl font-bold leading-tight mb-3" data-testid="text-resource-name">
+              {resource.name}
+            </h2>
             <Badge variant="secondary" className="text-sm uppercase font-medium">
               {resource.type}
             </Badge>
