@@ -25,6 +25,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/submissions", async (req, res) => {
+    try {
+      const submission = await storage.createSubmission(req.body);
+      res.status(201).json(submission);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create submission" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

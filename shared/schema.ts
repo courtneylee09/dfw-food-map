@@ -17,9 +17,11 @@ export const foodResources = pgTable("food_resources", {
 
 export const submissions = pgTable("submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  resourceName: text("resource_name").notNull(),
-  resourceType: varchar("resource_type", { length: 50 }).notNull(),
+  name: text("name").notNull(),
+  type: varchar("type", { length: 50 }).notNull(),
   address: text("address").notNull(),
+  latitude: text("latitude").notNull(),
+  longitude: text("longitude").notNull(),
   hours: text("hours"),
   photoUrl: text("photo_url"),
   submittedAt: timestamp("submitted_at").defaultNow(),

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { MapPin, List, Crosshair } from 'lucide-react';
+import { MapPin, List, Crosshair, Plus } from 'lucide-react';
+import { useLocation } from 'wouter';
 import ResourceMap from '@/components/ResourceMap';
 import FilterPills, { FilterType } from '@/components/FilterPills';
 import ResourceList from '@/components/ResourceList';
@@ -13,6 +14,7 @@ import logoImage from '@assets/ChatGPT Image Nov 6, 2025, 11_13_56 AM_1762445808
 type View = 'map' | 'list' | 'detail';
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [view, setView] = useState<View>('map');
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [selectedResource, setSelectedResource] = useState<FoodResource | null>(null);
@@ -73,13 +75,22 @@ export default function Home() {
   return (
     <div className="h-screen-safe flex flex-col bg-background overflow-hidden">
       <div className="flex-none p-3 border-b space-y-2">
-        <div className="text-center">
+        <div className="text-center relative">
           <img 
             src={logoImage} 
             alt="Food in the D" 
             className="mx-auto w-40 h-auto mb-1"
             data-testid="img-logo"
           />
+          <Button
+            size="icon"
+            variant="ghost"
+            className="absolute top-0 right-0"
+            onClick={() => setLocation('/submit')}
+            data-testid="button-add-resource"
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
           <p className="text-base text-muted-foreground">
             Find free meals and groceries near you
           </p>
