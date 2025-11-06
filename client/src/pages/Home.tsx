@@ -8,7 +8,7 @@ import ResourceList from '@/components/ResourceList';
 import ResourceDetail from '@/components/ResourceDetail';
 import AddToHomeModal from '@/components/AddToHomeModal';
 import { FoodResource } from '@shared/schema';
-import logoImage from '@assets/ChatGPT Image Nov 6, 2025, 11_13_56 AM_1762445670994.png';
+import logoImage from '@assets/ChatGPT Image Nov 6, 2025, 11_13_56 AM_1762445808899.png';
 
 type View = 'map' | 'list' | 'detail';
 
