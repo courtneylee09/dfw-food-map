@@ -188,25 +188,7 @@ export default function SubmitResource() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="photoUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Photo URL (Optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://example.com/photo.jpg"
-                        className="min-h-11 text-base"
-                        data-testid="input-photo"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            
 
               <Button
                 type="submit"
