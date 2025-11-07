@@ -1,14 +1,14 @@
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 
-export type FilterType = 'All' | 'Community Fridge' | 'Hot Meal' | 'Food Pantry';
+export type FilterType = 'All' | 'Food Pantry' | 'Community Fridge' | 'Soup Kitchen' | 'Hot Meal' | 'Youth Supper (CACFP)' | 'Senior Meals' | 'Grocery Distribution';
 
 interface FilterPillsProps {
   onFilterChange: (filter: FilterType) => void;
   activeFilter: FilterType;
 }
 
-const filters: FilterType[] = ['All', 'Community Fridge', 'Hot Meal', 'Food Pantry'];
+const filters: FilterType[] = ['All', 'Food Pantry', 'Community Fridge', 'Soup Kitchen', 'Hot Meal', 'Youth Supper (CACFP)', 'Senior Meals', 'Grocery Distribution'];
 
 export default function FilterPills({ onFilterChange, activeFilter }: FilterPillsProps) {
   return (
@@ -23,7 +23,7 @@ export default function FilterPills({ onFilterChange, activeFilter }: FilterPill
             variant={activeFilter === filter ? "default" : "outline"}
             className="cursor-pointer whitespace-nowrap px-4 py-2 text-base font-medium min-h-11 snap-start flex items-center"
             onClick={() => onFilterChange(filter)}
-            data-testid={`filter-${filter.toLowerCase().replace(/\s+/g, '-')}`}
+            data-testid={`filter-${filter.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`}
           >
             {filter}
           </Badge>

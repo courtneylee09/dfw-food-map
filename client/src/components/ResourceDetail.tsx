@@ -2,7 +2,7 @@ import { FoodResource } from '@shared/schema';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { MapPin, Clock, ArrowLeft } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft, Phone, Calendar } from 'lucide-react';
 
 interface ResourceDetailProps {
   resource: FoodResource;
@@ -74,6 +74,42 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
                   </div>
                 </div>
               )}
+
+              {resource.phone && (
+                <div className="pt-4 border-t">
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-5 h-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-base mb-1">Phone</h3>
+                      <a 
+                        href={`tel:${resource.phone}`}
+                        className="text-base text-foreground hover:underline"
+                        data-testid="link-phone"
+                      >
+                        {resource.phone}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-4 border-t">
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-base mb-1">Appointment</h3>
+                    {resource.appointmentRequired ? (
+                      <p className="text-base text-muted-foreground" data-testid="text-appointment">
+                        Appointment required - please call ahead
+                      </p>
+                    ) : (
+                      <p className="text-base text-muted-foreground" data-testid="text-no-appointment">
+                        No appointment required
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
         </div>
