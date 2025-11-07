@@ -10,7 +10,7 @@ interface AddToHomeModalProps {
 export default function AddToHomeModal({ isOpen, onClose }: AddToHomeModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[90vh] flex flex-col" data-testid="modal-add-to-home">
+      <DialogContent className="max-w-md w-[calc(100%-2rem)] max-h-[80vh] flex flex-col" data-testid="modal-add-to-home">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Quick Access Tip
