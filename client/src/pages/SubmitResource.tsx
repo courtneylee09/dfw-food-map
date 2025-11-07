@@ -42,6 +42,8 @@ export default function SubmitResource() {
       longitude: '',
       hours: '',
       photoUrl: '',
+      phone: '',
+      appointmentRequired: false,
     },
   });
 
@@ -136,7 +138,11 @@ export default function SubmitResource() {
                       <SelectContent>
                         <SelectItem value="Food Pantry">Food Pantry</SelectItem>
                         <SelectItem value="Community Fridge">Community Fridge</SelectItem>
+                        <SelectItem value="Soup Kitchen">Soup Kitchen</SelectItem>
                         <SelectItem value="Hot Meal">Hot Meal</SelectItem>
+                        <SelectItem value="Youth Supper (CACFP)">Youth Supper (CACFP)</SelectItem>
+                        <SelectItem value="Senior Meals">Senior Meals</SelectItem>
+                        <SelectItem value="Grocery Distribution">Grocery Distribution</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -188,7 +194,53 @@ export default function SubmitResource() {
                 )}
               />
 
-            
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., (313) 555-1234"
+                        className="min-h-11 text-base"
+                        data-testid="input-phone"
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="appointmentRequired"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Appointment Required?</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(value === 'true')} 
+                      value={field.value ? 'true' : 'false'}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          className="min-h-11 text-base"
+                          data-testid="select-appointment"
+                        >
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="false">No</SelectItem>
+                        <SelectItem value="true">Yes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <Button
                 type="submit"

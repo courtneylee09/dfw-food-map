@@ -25,6 +25,8 @@ export const submissions = pgTable("submissions", {
   longitude: text("longitude").notNull(),
   hours: text("hours"),
   photoUrl: text("photo_url"),
+  phone: text("phone"),
+  appointmentRequired: boolean("appointment_required").default(false),
   submittedAt: timestamp("submitted_at").defaultNow(),
 });
 
