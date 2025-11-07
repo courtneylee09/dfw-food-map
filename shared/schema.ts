@@ -12,6 +12,8 @@ export const foodResources = pgTable("food_resources", {
   longitude: text("longitude").notNull(),
   hours: text("hours"),
   distance: text("distance"),
+  phone: text("phone"),
+  appointmentRequired: boolean("appointment_required").default(false),
 });
 
 export const submissions = pgTable("submissions", {
