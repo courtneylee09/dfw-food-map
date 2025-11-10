@@ -1,24 +1,44 @@
 import { DivIcon } from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { UtensilsCrossed, Refrigerator, Store } from 'lucide-react';
+import { UtensilsCrossed, Refrigerator, Store, Soup, Users, User, ShoppingCart } from 'lucide-react';
 
-export type ResourceType = 'Food Pantry' | 'Community Fridge' | 'Hot Meal';
+export type ResourceType = 'Food Pantry' | 'Community Fridge' | 'Soup Kitchen' | 'Hot Meal' | 'Youth Supper (CACFP)' | 'Senior Meals' | 'Grocery Distribution';
 
 const iconConfig: Record<ResourceType, { Icon: React.ElementType; color: string; bgColor: string }> = {
   'Food Pantry': {
     Icon: Store,
-    color: '#145145',
-    bgColor: '#4a7c59',
+    color: '#8B5837',
+    bgColor: '#C47A4D',
   },
   'Community Fridge': {
     Icon: Refrigerator,
-    color: '#2d5a3d',
-    bgColor: '#5c8a6f',
+    color: '#4A8A5C',
+    bgColor: '#6BAF7D',
+  },
+  'Soup Kitchen': {
+    Icon: Soup,
+    color: '#A65661',
+    bgColor: '#D07A82',
   },
   'Hot Meal': {
     Icon: UtensilsCrossed,
-    color: '#8b4513',
-    bgColor: '#b8743d',
+    color: '#A87F36',
+    bgColor: '#D8A44C',
+  },
+  'Youth Supper (CACFP)': {
+    Icon: Users,
+    color: '#7366A0',
+    bgColor: '#9E8BC2',
+  },
+  'Senior Meals': {
+    Icon: User,
+    color: '#506B8A',
+    bgColor: '#6F8FAF',
+  },
+  'Grocery Distribution': {
+    Icon: ShoppingCart,
+    color: '#6A763F',
+    bgColor: '#8E9F56',
   },
 };
 
