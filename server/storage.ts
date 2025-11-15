@@ -1,7 +1,4 @@
 import { type FoodResource, type InsertFoodResource, type Submission, type InsertSubmission } from "@shared/schema";
-import { db } from "./db";
-import { foodResources, submissions } from "@shared/schema";
-import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getFoodResources(): Promise<FoodResource[]>;
@@ -10,25 +7,52 @@ export interface IStorage {
   createSubmission(submission: InsertSubmission): Promise<Submission>;
 }
 
-export class DbStorage implements IStorage {
+export class MemStorage implements IStorage {
+  private foodResources: FoodResource[] = [];
+  private submissions: Submission[] = [];
+
   async getFoodResources(): Promise<FoodResource[]> {
-    return await db.select().from(foodResources);
+    return this.foodResources;
   }
 
   async getFoodResource(id: string): Promise<FoodResource | undefined> {
-    const results = await db.select().from(foodResources).where(eq(foodResources.id, id));
-    return results[0];
+    return this.foodResources.find(resource => resource.id === id);
   }
 
   async createFoodResource(resource: InsertFoodResource): Promise<FoodResource> {
-    const results = await db.insert(foodResources).values(resource).returning();
-    return results[0];
+    const newResource: FoodResource = {
+      id: crypto.randomUUID(),
+      name: resource.name,
+      type: resource.type,
+      address: resource.address,
+      latitude: resource.latitude,
+      longitude: resource.longitude,
+      hours: resource.hours ?? null,
+      distance: resource.distance ?? null,
+      phone: resource.phone ?? null,
+      appointmentRequired: resource.appointmentRequired ?? null,
+    };
+    this.foodResources.push(newResource);
+    return newResource;
   }
 
   async createSubmission(submission: InsertSubmission): Promise<Submission> {
-    const results = await db.insert(submissions).values(submission).returning();
-    return results[0];
+    const newSubmission: Submission = {
+      id: crypto.randomUUID(),
+      submittedAt: new Date(),
+      name: submission.name,
+      type: submission.type,
+      address: submission.address,
+      latitude: submission.latitude,
+      longitude: submission.longitude,
+      hours: submission.hours ?? null,
+      phone: submission.phone ?? null,
+      appointmentRequired: submission.appointmentRequired ?? null,
+      photoUrl: submission.photoUrl ?? null,
+    };
+    this.submissions.push(newSubmission);
+    return newSubmission;
   }
 }
 
-export const storage = new DbStorage();
+export const storage = new MemStorage();
