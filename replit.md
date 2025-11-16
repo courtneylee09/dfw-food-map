@@ -1,8 +1,8 @@
-# Detroit Food Resources Map
+# Dallas-Fort Worth Food Resources Map
 
 ## Overview
 
-The Detroit Food Resources Map is a community-focused web application that helps Detroit residents find free food resources including food pantries, community fridges, soup kitchens, hot meal programs, and other food assistance locations. The application prioritizes accessibility, mobile-first design, and ease of use - no login required, just open and find food resources nearby. Users can view resources on an interactive map, filter by type, view details, get directions, and submit new resources for community review.
+The Dallas-Fort Worth Food Resources Map is a community-focused web application that helps Dallas-Fort Worth residents find free food resources including food pantries, community fridges, soup kitchens, hot meal programs, and other food assistance locations. The application prioritizes accessibility, mobile-first design, and ease of use - no login required, just open and find food resources nearby. Users can view resources on an interactive map, filter by type, view details, get directions, and submit new resources for community review.
 
 ## User Preferences
 
@@ -48,7 +48,7 @@ Preferred communication style: Simple, everyday language.
 - Browser Geolocation API for user location detection
 - Distance calculation using Haversine formula
 - Automatic sorting of resources by proximity to user
-- Fallback to Detroit city center (42.3314, -83.0458) when location unavailable
+- Fallback to Dallas-Fort Worth center (32.7767, -96.7970) when location unavailable
 
 ### Backend Architecture
 

@@ -23,12 +23,12 @@ const MAX_RETRIES = 3;
 const RATE_LIMIT_DELAY = 250; // ms between requests
 const RETRY_DELAY = 1000; // ms to wait before retry
 
-// Detroit bounding box for validation (optional - adjust for your city)
-const DETROIT_BOUNDS = {
-  minLat: 42.0,
-  maxLat: 43.0,
-  minLon: -83.5,
-  maxLon: -82.5
+// Dallas-Fort Worth bounding box for validation (optional)
+const DFW_BOUNDS = {
+  minLat: 32.3,
+  maxLat: 33.4,
+  minLon: -97.9,
+  maxLon: -96.2
 };
 
 interface GeocodingResult {
@@ -73,9 +73,9 @@ async function geocodeAddressWithRetry(
         const confidence = feature.properties.rank?.confidence || 0;
 
         // Validate coordinates are within expected bounds (optional)
-        if (lat < DETROIT_BOUNDS.minLat || lat > DETROIT_BOUNDS.maxLat ||
-            lon < DETROIT_BOUNDS.minLon || lon > DETROIT_BOUNDS.maxLon) {
-          console.warn(`  ⚠ Warning: Coordinates outside Detroit area (${lat}, ${lon})`);
+        if (lat < DFW_BOUNDS.minLat || lat > DFW_BOUNDS.maxLat ||
+            lon < DFW_BOUNDS.minLon || lon > DFW_BOUNDS.maxLon) {
+          console.warn(`  ⚠ Warning: Coordinates outside Dallas-Fort Worth area (${lat}, ${lon})`);
           console.warn(`    Formatted: ${feature.properties.formatted}`);
           // Continue anyway - don't fail, just warn
         }
@@ -113,7 +113,7 @@ async function validateApiKey(): Promise<boolean> {
   console.log('✓ API key found, testing...');
 
   try {
-    const testUrl = `https://api.geoapify.com/v1/geocode/search?text=Detroit&apiKey=${GEOAPIFY_API_KEY}`;
+    const testUrl = `https://api.geoapify.com/v1/geocode/search?text=Dallas&apiKey=${GEOAPIFY_API_KEY}`;
     const response = await fetch(testUrl);
 
     if (response.status === 401 || response.status === 403) {

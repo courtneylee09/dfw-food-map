@@ -18,7 +18,7 @@ export default function Home() {
   const [view, setView] = useState<View>('map');
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [selectedResource, setSelectedResource] = useState<FoodResource | null>(null);
-  const [userLocation, setUserLocation] = useState<[number, number]>([42.3314, -83.0458]);
+  const [userLocation, setUserLocation] = useState<[number, number]>([32.7767, -96.7970]);
   const [showAddToHome, setShowAddToHome] = useState(false);
   const [hasClickedResource, setHasClickedResource] = useState(false);
 
@@ -116,7 +116,7 @@ export default function Home() {
           <div></div>
           <img
             src={logoImage}
-            alt="Food in the D"
+            alt="Dallas-Fort Worth Food Resources"
             className="w-40 h-auto justify-self-center"
             data-testid="img-logo"
           />

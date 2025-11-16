@@ -1,4 +1,4 @@
-# Detroit Food Resources App - Design Guidelines
+# Dallas-Fort Worth Food Resources App - Design Guidelines
 
 ## Design Approach
 **Utility-First Community Tool**: This is a grassroots mutual aid app focused on speed, accessibility, and community trust. Design decisions prioritize function and readability over visual flourish. Think "block club meets design lab" — grounded, warm, and practical.
@@ -81,7 +81,7 @@ Structure per card:
 - **Location Permission**: Friendly prompt explaining why location helps find nearby resources
 
 ## Images
-**Map Background**: Primary visual element on home screen showing Detroit streets with resource pins overlaid. Use warm, slightly desaturated map styling to match brand earth tones.
+**Map Background**: Primary visual element on home screen showing Dallas-Fort Worth streets with resource pins overlaid. Use warm, slightly desaturated map styling to match brand earth tones.
 
 **Optional Resource Photos**: User-submitted photos in detail view (if available), displayed as rounded cards above address information.
 

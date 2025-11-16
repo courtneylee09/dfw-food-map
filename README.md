@@ -1,10 +1,10 @@
-# Detroit Food Resources Map
+# Dallas-Fort Worth Food Resources Map
 
-A community-focused web application to help Detroit residents find free food resources including food pantries, community fridges, and hot meal programs.
+A community-focused web application to help Dallas-Fort Worth residents find free food resources including food pantries, community fridges, and hot meal programs.
 
 ## What is this?
 
-This is a mobile-friendly map and directory that shows where people can find free food in Detroit. No login required, no complicated setup - just open it and find food resources near you.
+This is a mobile-friendly map and directory that shows where people can find free food in the Dallas-Fort Worth area. No login required, no complicated setup - just open it and find food resources near you.
 
 ## Features
 
@@ -110,7 +110,7 @@ Your CSV should include these columns:
 - **id** - Unique identifier (optional, will auto-generate if not provided)
 - **name** - Name of the food resource
 - **type** - Type of resource (Food Pantry, Community Fridge, Hot Meal, Soup Kitchen, etc.)
-- **address** - Full address including city, state, and zip code (e.g., "123 Main St, Detroit, MI 48201")
+- **address** - Full address including city, state, and zip code (e.g., "123 Main St, Dallas, TX 75201")
 - **phone** - Contact phone number (optional)
 - **latitude** - Latitude coordinate (leave empty if you'll geocode later)
 - **longitude** - Longitude coordinate (leave empty if you'll geocode later)
@@ -142,7 +142,7 @@ MIT License - feel free to use this for your own community!
 
 ## Acknowledgments
 
-Built to serve the Detroit community and help people find the food resources they need.
+Built to serve the Dallas-Fort Worth community and help people find the food resources they need.
 
 ---
 
