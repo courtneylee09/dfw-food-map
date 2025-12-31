@@ -9,10 +9,20 @@ if (!process.env.DATABASE_URL) {
   console.log("✓ DATABASE_URL is set, connecting to PostgreSQL database");
 }
 
-export const pool = process.env.DATABASE_URL 
-  ? new Pool({ connectionString: process.env.DATABASE_URL })
+// Configure pool with SSL support for production databases
+const poolConfig = process.env.DATABASE_URL 
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' 
+        ? { rejectUnauthorized: false } 
+        : false
+    }
+  : null;
+
+export const pool = poolConfig 
+  ? new Pool(poolConfig)
   : null as any;
 
-export const db = process.env.DATABASE_URL
+export const db = pool
   ? drizzle(pool, { schema })
   : null as any;
