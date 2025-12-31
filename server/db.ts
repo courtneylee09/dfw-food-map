@@ -25,5 +25,5 @@ export const pool = !process.env.DATABASE_URL
 export const db = !process.env.DATABASE_URL
   ? null as any
   : isNeonDb
-    ? drizzleNeon({ client: pool as NeonPool, schema })
-    : drizzlePg({ client: pool as PgPool, schema });
+    ? drizzleNeon(pool as NeonPool, { schema })
+    : drizzlePg(pool as PgPool, { schema });
