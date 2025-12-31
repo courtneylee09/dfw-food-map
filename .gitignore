@@ -12,3 +12,7 @@ geocoding-failed.json
 # Environment variables
 .env
 .env.local
+
+# Replit files
+.config/
+.local/
