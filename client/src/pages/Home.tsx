@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { MapPin, List, Crosshair, Plus } from 'lucide-react';
 import { useLocation } from 'wouter';
 import ResourceMap from '@/components/ResourceMap';
+import GoogleMapWrapper from '@/components/GoogleMapWrapper';
 import FilterPills, { FilterType } from '@/components/FilterPills';
 import ResourceList from '@/components/ResourceList';
 import ResourceDetail from '@/components/ResourceDetail';
 import AddToHomeModal from '@/components/AddToHomeModal';
+import ZipCodeSearch from '@/components/ZipCodeSearch';
 import { FoodResource } from '@shared/schema';
 import logoImage from '@assets/logo.png';
+import logo2Image from '@assets/logo2.png';
 
 type View = 'map' | 'list' | 'detail';
 
@@ -21,6 +24,9 @@ export default function Home() {
   const [userLocation, setUserLocation] = useState<[number, number]>([32.7767, -96.7970]);
   const [showAddToHome, setShowAddToHome] = useState(false);
   const [hasClickedResource, setHasClickedResource] = useState(false);
+  const [zipSearchActive, setZipSearchActive] = useState(false);
+  const [maxDistance, setMaxDistance] = useState(5);
+  const [searchedZip, setSearchedZip] = useState<string | null>(null);
 
   const { data: resources = [], isLoading } = useQuery<FoodResource[]>({
     queryKey: ['/api/resources', userLocation[0], userLocation[1]],
@@ -33,15 +39,32 @@ export default function Home() {
         }
       });
       if (!response.ok) throw new Error('Failed to fetch resources');
-      return response.json();
+      const data = await response.json();
+      return data;
     },
     staleTime: 0,
     gcTime: 0
   });
 
   const filteredResources = resources.filter(resource => {
-    if (activeFilter === 'All') return true;
-    return resource.type === activeFilter;
+    // Apply category filter
+    if (activeFilter !== 'All' && resource.type !== activeFilter) {
+      return false;
+    }
+    
+    // Apply distance filter if zip search is active
+    if (zipSearchActive) {
+      // Only include resources with a numeric distance AND within range
+      if (typeof resource.distance === 'number') {
+        // Add 10% tolerance to avoid filtering out resources just over the boundary due to rounding
+        const tolerance = maxDistance * 0.1;
+        return resource.distance <= maxDistance + tolerance;
+      }
+      // If distance is missing or non-numeric, exclude it when searching by ZIP
+      return false;
+    }
+    
+    return true;
   });
 
   const handleUseLocation = () => {
@@ -114,16 +137,24 @@ export default function Home() {
       <div className="flex-none p-3 border-b space-y-2">
         <div className="grid grid-cols-3 items-center mb-1">
           <div></div>
-          <img
-            src={logoImage}
-            alt="Dallas-Fort Worth Food Resources"
-            className="w-40 h-auto justify-self-center"
-            data-testid="img-logo"
-          />
+          <div className="flex items-end justify-center gap-3">
+            <img
+              src={logoImage}
+              alt="Dallas-Fort Worth Food Resources"
+              className="w-40 h-auto"
+              data-testid="img-logo"
+            />
+            <img
+              src={logo2Image}
+              alt="Food in the D"
+              className="w-36 h-auto mt-4"
+              data-testid="img-logo2"
+            />
+          </div>
           <Button
             size="icon"
             variant="ghost"
-            className="justify-self-end bg-[#114121] text-[#fff]"
+            className="justify-self-end bg-[#002145] text-[#fff]"
             onClick={() => setLocation('/submit')}
             data-testid="button-add-resource"
           >
@@ -133,6 +164,22 @@ export default function Home() {
         <p className="text-base text-muted-foreground text-center">
           Find free meals and groceries near you
         </p>
+
+        <ZipCodeSearch
+          onSearch={(lat, lng, zipCode, distance) => {
+            setUserLocation([lat, lng]);
+            setZipSearchActive(true);
+            setMaxDistance(distance);
+            setSearchedZip(zipCode);
+          }}
+          onClear={() => {
+            setUserLocation([32.7767, -96.7970]);
+            setZipSearchActive(false);
+            setMaxDistance(5);
+            setSearchedZip(null);
+          }}
+          selectedDistance={maxDistance}
+        />
         
         <Button
           onClick={handleUseLocation}
@@ -166,18 +213,21 @@ export default function Home() {
       </div>
       <div className="flex-1 min-h-0 relative overflow-hidden">
         {view === 'map' ? (
-          <ResourceMap
-            resources={filteredResources}
-            center={userLocation}
-            zoom={13}
-            onResourceClick={(resource) => {
-              setSelectedResource(resource);
-              setView('detail');
-              if (!hasClickedResource) {
-                setHasClickedResource(true);
-              }
-            }}
-          />
+          <GoogleMapWrapper>
+            <ResourceMap
+              resources={filteredResources}
+              center={userLocation}
+              zoom={13}
+              onResourceClick={(resource) => {
+                setSelectedResource(resource);
+                setView('detail');
+                if (!hasClickedResource) {
+                  setHasClickedResource(true);
+                }
+              }}
+              searchedZip={searchedZip}
+            />
+          </GoogleMapWrapper>
         ) : (
           <div className="h-full overflow-auto">
             <ResourceList
@@ -189,10 +239,25 @@ export default function Home() {
                   setHasClickedResource(true);
                 }
               }}
+              searchedZip={searchedZip}
             />
           </div>
         )}
       </div>
+      {zipSearchActive && filteredResources.length === 0 && resources.length > 0 && (
+        <div className="p-3 border-t bg-yellow-50 text-yellow-900">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-sm">
+              No resources found within <strong>{maxDistance} miles</strong> of <strong>{searchedZip}</strong>.
+            </p>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" onClick={() => setMaxDistance(10)} data-testid="try-10mi">Try 10 mi</Button>
+              <Button size="sm" onClick={() => setMaxDistance(15)} data-testid="try-15mi">Try 15 mi</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setZipSearchActive(false); setSearchedZip(null); }} data-testid="show-all">Show all results</Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex-none border-t p-2">
         <FilterPills
           activeFilter={activeFilter}

@@ -6,6 +6,7 @@ import { FoodResource } from '@shared/schema';
 interface ResourceCardProps {
   resource: FoodResource;
   onClick?: () => void;
+  searchedZip?: string | null;
 }
 
 type ResourceType = 'Food Pantry' | 'Community Fridge' | 'Soup Kitchen' | 'Hot Meal' | 'Youth Supper (CACFP)' | 'Senior Meals' | 'Grocery Distribution';
@@ -41,7 +42,7 @@ const resourceColors: Record<ResourceType, { bg: string; border: string }> = {
   },
 };
 
-export default function ResourceCard({ resource, onClick }: ResourceCardProps) {
+export default function ResourceCard({ resource, onClick, searchedZip }: ResourceCardProps) {
   const colors = resourceColors[resource.type as ResourceType] || resourceColors['Food Pantry'];
 
   return (
@@ -70,9 +71,20 @@ export default function ResourceCard({ resource, onClick }: ResourceCardProps) {
                 {resource.type}
               </Badge>
               {resource.distance && (
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <MapPin className="w-3 h-3" />
-                  <span data-testid={`text-distance-${resource.id}`}>{resource.distance}</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <MapPin className="w-3 h-3" />
+                    <span data-testid={`text-distance-${resource.id}`}>
+                      {typeof resource.distance === 'number'
+                        ? `${resource.distance.toFixed(1)} mi`
+                        : resource.distance}
+                    </span>
+                  </div>
+                  {typeof resource.distance === 'number' && searchedZip && (
+                    <div className="text-xs text-muted-foreground">
+                      {`approx ${resource.distance < 0.1 ? '<0.1' : resource.distance.toFixed(1)} miles from ${searchedZip}`}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

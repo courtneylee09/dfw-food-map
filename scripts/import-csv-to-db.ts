@@ -1,5 +1,6 @@
-import { db } from './server/db';
-import { foodResources } from '@shared/schema';
+import 'dotenv/config';
+import { db } from '../server/db';
+import { foodResources } from '../shared/schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -98,8 +99,8 @@ async function main() {
   console.log('Starting CSV import process...\n');
 
   // Get CSV path from command line argument or use default
-  const csvFile = process.argv[2] || path.join(process.cwd(), 'data', 'sample-food-resources.csv');
-  const csvPath = csvFile.startsWith('/') ? csvFile : path.join(process.cwd(), csvFile);
+  const csvFile = process.argv[2] || 'data/sample-food-resources.csv';
+  const csvPath = path.isAbsolute(csvFile) ? csvFile : path.join(process.cwd(), csvFile);
 
   console.log(`Reading CSV from: ${csvPath}\n`);
   const rows = await parseCSV(csvPath);

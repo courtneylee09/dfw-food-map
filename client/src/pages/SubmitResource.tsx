@@ -140,7 +140,7 @@ export default function SubmitResource() {
                         <SelectItem value="Community Fridge">Community Fridge</SelectItem>
                         <SelectItem value="Soup Kitchen">Soup Kitchen</SelectItem>
                         <SelectItem value="Hot Meal">Hot Meal</SelectItem>
-                        <SelectItem value="Youth Supper (CACFP)">Youth Supper (CACFP)</SelectItem>
+                        <SelectItem value="Youth Supper">Youth Supper</SelectItem>
                         <SelectItem value="Senior Meals">Senior Meals</SelectItem>
                         <SelectItem value="Grocery Distribution">Grocery Distribution</SelectItem>
                       </SelectContent>

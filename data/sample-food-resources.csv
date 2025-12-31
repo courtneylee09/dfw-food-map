@@ -1,104 +1,105 @@
-﻿id,name,type,address,phone,latitude,longitude,hours,distance,appointment_required
-33910fbc-3f90-44b3-a058-c1e3d8015078,Gleaners Community Food Bank,Food Pantry,"2131 Beaufait St, Detroit, MI 48207",(313) 923-3535,42.3505,-83.0245,Tue-Thu 9AM-4PM,1.8 mi,
-79c52bcd-81a3-4ad5-a072-11ec0f1bdbe2,Midtown Community Fridge,Community Fridge,"4160 Cass Ave, Detroit, MI 48201",,42.3504,-83.0642,24/7,0.7 mi,
-83bcb99f-9545-4da4-b790-79b51138995f,Cass Community Social Services,Food Pantry,"11850 Woodrow Wilson St, Detroit, MI 48206",,42.3690,-83.0877,Mon-Fri 10AM-2PM,0.4 mi,
-890c9e10-9898-48c0-9fa8-407728299177,Southwest Community Fridge,Community Fridge,"7310 W Vernor Hwy, Detroit, MI 48209",,42.3185,-83.1201,24/7,1.2 mi,
-e5b7901a-d844-4df8-86b8-467bcfcc7057,Basilica of St. Anne de Detroit,Food Pantry,"1000 St. Anne St, Detroit, MI 48216",313-496-1701,42.3065,-83.0813,SAT: 11:00am - 1:00pm,,No
-a99d8837-3930-4e4e-9c1b-c235100bcb2c,Bethany Lutheran Church,Food Pantry,"11475 E. Outer Drive, Detroit, MI 48224",(313)885-7721,42.4146,-82.9468,WED: 2nd and 4th Wednesdays 12:30pm - 3:30pm,,Yes
-71872eb9-3b08-46e3-b511-273993efa1ff,Brightmoor Connection,Food Pantry,"20740 Grand River Ave, Detroit, MI 48219",(313)740-7688,42.4167,-83.2709,MON: 2:00pm - 6:30pm; TUE: 2:00pm - 6:30pm; WED: 10:00am - 1:00pm,,No
-62204939-1246-4260-a330-cec6ef24b529,Calvary Presbyterian Church,Food Pantry,"19125 Greenview Ave, Detroit, MI 48219",(313)537-2590,42.4277,-83.2657,SAT: 10:00am - 12:30pm,,No
-72dc11fe-e1c9-4bd3-99cc-58658cdbb536,Capuchin Soup Kitchen - Meldrum Soup Kitchen,Soup Kitchen,"1264 Meldrum St, Detroit, MI 48207",313-579-2100,42.3464,-83.0258,MON–FRI: 8:30am–9:00am (Breakfast); 11:00am–1:00pm (Lunch),,No
-a304c4c7-1492-46db-a955-06ecac5a2e96,Capuchin Soup Kitchen - Services Center Pantry,Food Pantry,"6333 Medbury St, Detroit, MI 48211",313-925-0514,42.3843,-83.0373,MON–FRI: 8:30am - 4:30pm,,Yes
-4d105052-d451-489a-b93a-7c1b46b307e0,Caring Community Center,Food Pantry,"14531 Grand River Ave, Detroit, MI 48227",,42.3878,-83.1888,SAT: 10:00am-1:00pm (First Saturday of the Month),,No
-b9c08267-904a-4d67-bbf3-fd41053e6694,Cass Community Care Services,Soup Kitchen,"18500 Woodrow Wilson St, Detroit, MI 48206",(313)883-2277,42.4195,-83.0972,MON–SUN: 7:00am - 5:00pm,,No
-ee48dbf5-0133-4837-8a33-8a927409c277,Center for the Works of Mercy,Food Pantry,"8642 Woodward Ave, Detroit, MI 48202",313-335-3261,42.3786,-83.0739,THU–FRI: 1:00pm - 4:00pm,,Yes
-4259bade-d30a-429b-9ab2-579c88c52732,Central United Methodist Church - The Noah Project,Food Pantry,"23 E. Adams, Detroit, MI 48226",(313)965-5422,42.3365,-83.0491,MON–THU: 10:30am–2:00pm,,No
-3958fe68-c119-4259-b2fa-fc1af64b2126,Citadel of Praise,Food Pantry,"20280 Lyndon, Detroit, MI 48223",(313)535-1500,42.4033,-83.2476,,,No
-d50b6443-db16-42f5-ad13-bd8510710d8b,Coalition on Temporary Shelter (C.O.T.S.),Food Pantry,"16630 Wyoming St, Detroit, MI 48221",,42.4164,-83.1598,,,No
-d3c75e74-6f02-444b-80d6-37badd18e6d1,Community Services CDC,Food Pantry,"11529 Linwood St, Detroit, MI 48206",(313)865-6770,42.3927,-83.1069,THU: 3rd Thursdays 10:00am–2:00pm; SAT: 10:00am–2:00pm,,No
-602d4da4-ad10-4c10-a321-696f2db3cccc,Conant Gardens,Food Pantry,"18801 Joseph Campau St, Detroit, MI 48234",(313)369-1227,42.4264,-83.0463,TUE: 10:00am–11:45am,,No
-f8a2152d-45d5-475d-b5af-6bfac33cb322,Crossroads of Michigan,Food Pantry,"2424 W. Grand Blvd, Detroit, MI 48208",313-831-2000,42.3692,-83.0918,MON–FRI: 10:00am–3:00pm; SUN: 11:00am–1:00pm (Hot Meal),,Yes
-2ff41530-6a09-4aeb-8f28-377f91593cac,Deo Gratias Ministries Detroit,Food Pantry,"15879 E. 7 Mile Rd, Detroit, MI 48205",(313) 743-0477,42.4387,-82.9613,TUE & FRI: 10:00am–2:00pm,,Yes
-44cac073-143e-48dd-978d-3312bfd3599d,Detroit Northwest Church - SDA,Food Pantry,"14301 Burt Rd, Detroit, MI 48223",(313)236-2899,42.3893,-83.2547,THU: 11:00am–2:00pm,,No
-750c30be-42a9-4322-857a-ee5b01b7b9a7,Dexter Avenue Baptist Church,Food Pantry,"3350 W. Davison, Detroit, MI 48238",313-869-4878,42.3882,-83.1131,THU: 2nd Thursdays 12:00pm–3:00pm,,No
-479cb35d-2ec7-4215-b91a-360983b255ff,Evangelical Covenant Church / City Covenant Church,Soup Kitchen,"13624 Stout, Detroit, MI 48223",(313)535-1084,42.3854,-83.2559,MON–THU: 4:00pm–6:30pm (Dinner),,No
-90a1405e-0f2c-4d56-8cd0-528ac00837a4,Food Hub at St. Cunegunda,Food Pantry,"5900 St. Lawrence St, Detroit, MI 48210",(313) 963-8880,42.3256,-83.1195,MON: 2:00pm–4:00pm; TUE: 1:00pm–2:30pm; THU: 5:00pm–6:00pm,,Yes
-3fcb775e-5cd1-4afd-9a9e-d6d36ef74290,Gospel Tabernacle Food Pantry,Food Pantry,"12935 Buena Vista, Detroit, MI 48227",,42.3881,-83.1849,SAT: 1st & 3rd Saturdays 12:00pm–2:00pm,,No
-bfb9c549-5858-4486-89d2-209fd796cd99,Grace Temple Church of God in Christ,Food Pantry,"12521 Dexter Ave, Detroit, MI 48206",(313) 931-6095,42.3924,-83.1075,THU: Week of each month's 2nd Monday 11:00am–1:00pm,,No
-4646dbe9-7120-4831-87c0-5f33646e2555,Greater Apostolic Temple Food Distribution,Food Pantry,"17950 Charest, Detroit, MI 48212",(313)826-0902,42.4177,-83.0589,WED: 2:00pm–4:00pm,,Yes
-76778c03-cf08-477e-8f2e-6d3048460e13,Greater Dequindre Church of God - Lifeline Food Pantry,Food Pantry,"1847 Sycamore St, Detroit, MI 48208",(313)285-9368,42.3627,-83.0865,SAT: 2nd & 4th Saturdays 12:00pm–3:00pm,,No
-864fac77-d0cc-4ad8-8054-c9e735d559a3,Greater Quinn A.M.E.,Food Pantry,"13501 Rosa Parks Blvd, Detroit, MI 48238",(313)867-8380,42.3899,-83.1288,MON–FRI: 9:00am–3:00pm,,Yes
-cde5d65e-80f7-40be-ae92-abadcc58ea94,In the Trenches,Food Pantry,"304 S. Morrell, Detroit, MI 48209",(313) 554-3533,42.3057,-83.1082,FRI: 3:30pm–4:30pm; SAT: 10:30am–11:30am,,No
-a6f28796-9919-4bca-91fc-e538e5b46ea5,Iroquois Ave Christ Lutheran – Iroquois Wise Coalition,Food Pantry,"2411 Iroquois Ave, Detroit, MI 48214",(313)921-2667,42.3533,-82.9812,FRI: 9:30am–12:00pm,,No
-9b05a838-efa1-4ffa-b817-82e962941659,Kadesh Missionary Baptist Church,Food Pantry,"20361 Plymouth Rd, Detroit, MI 48228",(313)272-7887,42.3666,-83.2445,WED: 12:00pm–1:00pm,,No
-73eaa696-8080-4602-ba40-65e1459f76e4,King David CDC,Food Pantry,"18001 Sunset, Detroit, MI 48234",(313)891-4160,42.4264,-83.0483,WED: 4th Wednesdays 12:00pm–2:00pm,,No
-82ce45fa-1ed9-4751-b753-fcac7f7c91b7,Detroit Friendship House/Harvest House (Walk-Up Only),Food Pantry,"9540 Conant St., Hamtramck, MI 48212",(313)871-7443,,,TUE: 2:00pm - 4:00pm; THU: 2:00pm - 4:00pm; SAT: 9:00am - 12:00pm,,No
-ddf45955-ea66-4ae5-be32-05d432a54f38,Our Lady Queen of Apostles Church,Food Pantry,"3851 Prescott Street, Hamtramck, MI 48212",(313) 891-1520,,,THU: 10:00am (carryout lunch + mini food distribution); FRI: 10:00am (4th Friday),,No
-eabc2fcf-93c3-4bad-9a52-72b7495ac24d,Kingdom Presence (Client Choice Pantry),Food Pantry,"26500 Grand River (Rear Entrance), Redford, MI 48240",313-533-1956,,,WED: 10:00am - 12:00pm,,No
-dfa38b90-765c-4284-8b8a-6f4718843cb6,Redford Interfaith Relief,Food Pantry,"18499 Beech Daly Rd., Redford, MI 48240",,,,,,Yes
-fef1ebc0-6109-41fb-ae5b-b18136b3e7a6,Kennedy Building - Ecorse Public Schools (Drive-Up Only),Food Pantry,"27225 West Outer Drive, Ecorse, MI 48229",,,,,,No
-4d453b5e-0c72-4577-a54f-1241154b4a9f,Mercy Market at the Center for Works of Mercy,Food Pantry,"10301 Woodward, Detroit, MI 48202",,,,MON: 10:00am - 3:00pm; WED: 10:00am - 3:00pm,,No
-0e8527b4-e26f-4f62-8f0c-d32ce69ab2bd,Metropolitan Baptist Church,Food Pantry,"13110 14th Street, Detroit, MI 48238",(313)869-6676,,,SAT: 3rd Saturdays 10:00am - 12:00pm,,No
-618fe035-feed-4e69-8f6d-c98da8ccad73,Metropolitan United Methodist,Food Pantry,"8000 Woodward Ave., Detroit, MI 48202",(313)875-7407,,,WED: 12:00pm - 2:00pm,,Yes
-4b3e445a-1eee-4fbe-822e-b5bd493ef014,Michigan Veterans Foundation,Food Pantry,"4626 Grand River Ave., Detroit, MI 48208",(313)831-5500,,,,,No
-66fd9d83-1b92-427d-9405-1b97b9611dad,Mt. Vernon Baptist Church Food Pantry,Food Pantry,"15125 Burt Road, Detroit, MI 48223",313-538-1355,,,THU: 2:00pm - 5:00pm,,No
-d417beb2-9acb-4fe1-a6ad-dfba9cd055da,Muslim Family Services / ICNA Relief,Food Pantry,"12500 Mitchell, Detroit, MI 48212",(313) 366-6800,,,TUE: 10:00am - 3:00pm; THU: 10:00am - 3:00pm,,No
-4598466d-3401-4b1b-897e-a5e4eae30203,My Father's Business (Choice Pantry),Food Pantry,"21001 Moross Rd., Detroit, MI 48236",(313) 936-1537,,,SAT: Check In: 9:00-11:00AM (see seasonal schedule),,No
-4b3d2f83-f5e6-427e-8997-02a9eec417ed,Nativity Of Our Lord Pantry,Food Pantry,"5900 McClellan, Detroit, MI 48213",(313)922-0033,,,THU: 1:00pm - 4:00pm,,No
-7ec43f68-c2a3-4f6a-85ae-a1c97b7cdaac,Nazarene Community Outreach – Drive-thru Produce Distribution,Food Pantry,"901 Melbourne Street, Detroit, MI 48211",,,,"MON: 11:00am - 12:30pm (1st, 2nd, 3rd Mondays)",,No
-fe24b1e6-755f-430f-bf4d-603dfe0207f2,New Hope Tabernacle Church,Food Pantry,"20221 Lahser Rd., Detroit, MI 48219",(313)535-7999,,,WED: Last Wednesdays 9:00am - 11:30am,,No
-ea9db899-34a5-4e0f-b10d-91d982ff6d17,New Liberty Community Services,Food Pantry,"8425 Fenkell, Detroit, MI 48238",(313)342-2424,,,WED: 4:00pm - 6:00pm,,No
-2746acf9-1493-4ce9-8112-d2b6e60ba717,New Mount Hermon Missionary Baptist Church (Pantry & Soup Kitchen),Food Pantry,"3225 S Deacon St., Detroit, MI 48217",(313)704-7396,,,TUE: 12:00pm - 2:00pm (Pantry); THU: 12:00pm - 2:00pm (Pantry); SAT: 3rd Saturdays 12:00pm - 2:00pm (Soup Kitchen),,Yes
-9651ea06-b765-4cf5-8c3c-211672166cc9,New Paradigm School (Drive-Up Only),Food Pantry,"4001 29th Street, Detroit, MI 48210",,,,,,No
-c3f9b5af-4c65-45d0-89e4-86c63ecbb969,New Visions Missionary Baptist Church,Food Pantry,"14548 Joy Road, Detroit, MI 48228",(313)870-8788,,,SAT: 10:00am - 12:45pm,,No
-b738dd58-48ea-4953-a77c-589005a0b6bb,Our Lady Queen of Angels,Food Pantry,"4200 Martin Street, Detroit, MI 48210",313-841-0783,,,FRI: 9:00am - 11:00am,,No
-a81ed63b-033a-48ee-84cf-2f6571cab8db,Our Lady Queen of Angels (Drive-Up Only),Food Pantry,"4200 Martin St., Detroit, MI 48210",313-841-0783,,,,,No
-d460a287-efc8-4334-a1a6-33a10ffbd6c2,PHG Urban Life Center,Food Pantry,"6495 W. Warren, Detroit, MI 48210",(313)897-2381,,,SAT: 3rd Saturdays 10:00am - 12:00pm,,No
-37a1783c-6268-4f2c-b8ac-739e361df30c,Perfecting Community Church (Drive-Up Only),Food Pantry,"7616 Nevada St., Detroit, MI 48234",,,,,,No
-64968e4c-374a-45aa-b5cf-91d7c90acd9e,Project Healthy Community @ Northwest Activity Center,Food Pantry,"Northwest Activity Center (See listing dates), Detroit, MI",(248)892-4585,,,THU: 4th Thursdays 8:00am - 12:00pm,,No
-76744b77-3664-44f8-9b12-a486f0ad8c0f,Pure Word Missionary Baptist Church,Food Pantry,"20011 Grand River Ave, Detroit, MI 48219",(313)862-5900,,,WED: 10:00am - 2:00pm; FRI: 10:00am - 2:00pm,,No
-497e2e24-c55e-4d81-8d6e-094e5d8f1c02,Puritan St. Church of Christ,Food Pantry,"19451 Conant, Detroit, MI 48234",(313)893-1002,,,THU: Every other Thursday 8:30am - 12:00pm,,No
-3c632b80-3ab6-4cd5-b68b-b5f1188a1283,Salvation Army Conner Creek Corps and Community Center,Food Pantry,"3000 Conner Ave., Detroit, MI 48215",(313)822-2800,,,MON–FRI: 9:00am - 4:00pm,,No
-81d702fd-c619-4e18-bfab-927c61747d39,Salvation Army Grandale,Food Pantry,"11325 Montrose, Detroit, MI 48227",(313)835-3736,,,MON–FRI: 12:30pm - 4:30pm (Appointment Required),,Yes
-b6072749-dcf1-4079-9eb2-d740b614dfd4,Salvation Army Temple,Food Pantry,"3729 W. Chicago, Detroit, MI 48206",(313)897-2914,,,THU: 10:00am - 11:30am,,Yes
-8b233caa-2502-4ec2-9104-e9973760d34f,Scott Memorial United Methodist Church,Food Pantry,"15361 Plymouth Rd., Detroit, MI 48227",313-836-6301,,,FRI: 3rd Fridays 10:30am - 12:30pm,,No
-fd58ff70-bbc1-4e7a-b5c8-cb3841c7e188,Shrine of the Black Madonna,Food Pantry,"7625 Linwood, Detroit, MI 48206",313-244-6660,,,SAT: 3rd Saturday: 11:00am - 1:00pm,,No
-f9fb181b-005e-4b22-a400-fdb1ff2ff406,St. John Community Center,Food Pantry,"14320 Kercheval, Detroit, MI 48215",313-823-8323,,,FRI: 1:00pm (Serving the Lower East Side),,No
-cb3a3e3f-44c7-4cf0-86cc-acaba1a77e2d,St. Peter Claver S.V.D.P. @ Mt. Lebanon Strathmoor Church,Food Pantry,"14400 Puritan, Detroit, MI 48227",(313)342-5292,,,TUE: 10:00am - 12:30pm,,No
-344a1de9-dad5-46bc-b45e-d07676bbd8c6,St. Suzanne Cody Rouge Community Resource Center,Food Pantry,"19321 W. Chicago, Detroit, MI 48228",(313) 493-9129,,,THU: By appointment,,Yes
-82a283eb-2b32-4c9d-8a89-d67e89c06346,St. Timothy United Methodist Church,Food Pantry,"15888 Archdale, Detroit, MI 48227",,,,,,No
-39af162b-184a-41b8-a1ce-3e29ee71cd40,The Open Door COGIC,Food Pantry,"12411 E. Seven Mile Road, Detroit, MI 48205",(313)645-8644,,,MON: 1st and 3rd Mondays 9:30am - 12:30pm,,No
-3065a1e6-68ea-4cba-af99-c07c9b6a42c6,The Pope Francis Center,Soup Kitchen,"438 Saint Antoine Street, Detroit, MI 48226",(313) 964-2823,,,MON–SAT: 7:00am - 11:00am,,No
-2b17465d-3b7d-4631-a151-5b07ad5f3646,"Tri-Unity Enterprise, Inc. @ 3rd New Hope",Food Pantry,"12850 Plymouth Rd., Detroit, MI 48227",(313) 491-7890 ext 13,,,FRI: 4th Fridays 9:00am - 12:00pm,,Yes
-ee7beeb7-ebea-4589-84c9-b86a93ddddf6,True Love Evangelistic Ministries,Food Pantry,"20501 Plymouth Rd., Detroit, MI 48228",(313) 342-2182,,,SAT: 3rd Saturdays 9:30am (Please bring ID),,No
-0e0c0ec7-56c4-4dfa-ae4f-244ee13b50e6,Twelfth St. Food Pantry / Twelfth St. Missionary Baptist Church,Food Pantry,"1840 Midland, Detroit, MI 48238",313-868-2659,,,FRI: Every other Friday 10:00am - 12:00pm; 1:00pm - 3:00pm,,No
-4dbb1189-3c5a-4291-b328-9b89670b8b6d,Urban Neighborhood Initiative (Drive-Up Only),Food Pantry,"8300 Longworth, Detroit, MI 48209",,,,,,No
-39c756fb-6cbf-4cd5-84a2-8b78610b19e2,Urban Neighborhood Initiative - Walk-Up Service,Food Pantry,"8300 Longworth, Detroit, MI 48209",,,,Select Fridays: 9:00am - 10:00am (see dates),,No
-c68e7c22-4eec-4053-8cc6-6c1253603545,Word In Action Christian Center,Food Pantry,"19760 Meyers Rd., Detroit, MI 48235",(313)864-5300,,,FRI: 3rd Fridays 12:00pm - 3:00pm,,No
-7ffb6a9b-8d87-4ddb-b0dd-64b5a3cba20f,Word Of Truth,Food Pantry,"4900 Lovett St., Detroit, MI 48210",313-897-5213,,,SAT: 1st Saturdays 10:00am - 1:00pm,,No
-5f423735-ddcb-428b-bb9d-8aec800c045a,Bridging Communities,Community Fridge,"6900 McGraw Ave, Detroit, MI 48210",,,,Open 24/7,,No
-74ec006c-e4dd-44e1-8da1-b7a84bf114f1,Field Street Community Fridge,Community Fridge,"1812 Field Street, Detroit, MI 48214",,,,Open 24/7,,No
-0e61a118-2a0d-44b1-91f1-7ca8f0b87e90,Georgia St Community Collective Fridge,Community Fridge,"8902 Vinton Ave, Detroit, MI 48213",,,,Open 24/7,,No
-4d72bf2e-988c-4e4e-80f3-c0a2c2ef7c3c,Detroit Heals Detroit Community Fridge,Community Fridge,"19510 Alcoy Ave, Detroit, MI 48205",,,,Open 24/7,,No
-3f1fbc8b-4b34-469c-9135-ef2c3cd4c035,BasBlue Community Supper,Hot Meal,"110 E Ferry St, Detroit, MI 48202",,,,MON: 5:00pm – 7:00pm,,No
-053b75de-408b-4e08-93f1-6a064936454c,Adams Butzel Center (CACFP),Youth Supper (CACFP),"10500 Lyndon, Detroit, MI 48238",,,,MON–FRI: 4:30pm–6:30pm,,No
-de4887a4-3b4e-4653-bd39-f967794151fb,Farwell Recreation Center (CACFP),Youth Supper (CACFP),"2711 E Outer Dr, Detroit, MI 48234",,,,WED & FRI: 4:30pm–6:30pm,,No
-818845c9-cfa0-428a-b33f-5c67c8a98f8b,Kemeny Recreation Center (CACFP),Youth Supper (CACFP),"2260 S Fort St, Detroit, MI 48217",,,,MON–FRI: 4:30pm–6:30pm,,No
-c7578ba8-5a8b-4e9f-a1bd-5ad8d5b818a3,Racquet Up (CACFP),Youth Supper (CACFP),"6530 W Outer Dr, Detroit, MI 48235",,,,MON–THU: 4:30pm–6:30pm,,No
-e0a2ef64-2ed4-4831-8e22-97b1f9e36644,Patton Recreation Center (CACFP),Youth Supper (CACFP),"2301 Woodmere, Detroit, MI 48209",,,,MON–FRI (except WED): 4:30pm–6:30pm,,No
-fcfa98a6-2618-4484-80a5-d61a5b56b239,Adams Butzel Recreation (DAAA Senior Meals),Senior Meals,"10500 Lyndon, Detroit, MI 48238",,,,WED: 11:30am–1:00pm,,No
-959da755-3640-4aa3-88e5-066bc3b245b0,Buzel Family Center (DAAA Senior Meals),Senior Meals,"7737 Kercheval, Detroit, MI 48214",,,,WED: 11:00am–12:30pm,,No
-0ec6bb60-9695-46dc-9c74-1aa59fe1741b,Patton Recreation Center (DAAA Senior Meals),Senior Meals,"2301 Woodmere, Detroit, MI 48209",,,,WED: 11:30am–1:00pm,,No
-2831e018-ef1f-4933-9a5e-39de2f647643,Joseph Walker Williams Recreation Center (DAAA Senior Meals),Senior Meals,"8431 Rosa Parks Blvd, Detroit, MI 48206",,,,WED: 11:30am–1:00pm,,No
-d04b0b0a-ff2f-4e0f-b215-4d398b505884,Northwest Activities Center – Gleaners Groceries,Grocery Distribution,"18100 Meyers Rd, Detroit, MI 48235",(313) 578-7500,,,Every other MON: 2:00pm–4:00pm,,No
-b590ca6d-ed88-4c87-8ca5-78b53cb73927,Second Ebenezer Church Food Pantry,,"14601 Dequindre St, Detroit, MI 48212",(313) 867-4700,,,,,No
-0e8576d6-0500-478b-942b-9af14dc61862,St. Christine Christian Services,,"15317 Dacosta St, Detroit, MI 48223",(313) 535-7272,,,,,No
-b23e1542-95d0-443c-bef5-3bbb2ee1bdaf,Central United Methodist Church,,"23 E Adams Ave, Detroit, MI 48226",(313) 965-5422,,,,,No
-a2fb97ee-3d8d-423a-90ba-8ecdffbbf70f,Detroit Rescue Mission Ministries,,"3535 Third Ave, Detroit, MI 48201",(313) 993-4700,,,,,No
-56f5befd-8bf0-44b5-bf82-f924f52ae1c0,Zion Hope Baptist Church,,"4800 Van Dyke St, Detroit, MI 48214",(313) 924-1530,,,,,No
-77b4e208-6771-4fc6-baf3-59b3b143fe55,Bethel AME Church,,"5050 St Antoine St, Detroit, MI 48202",(313) 833-9300,,,,,No
-d2ddb223-d5ef-4ad7-8f8e-5eddaf3dc8bf,St. Vincent de Paul Detroit,,"3000 Gratiot Ave, Detroit, MI 48207",(313) 393-2930,,,,,No
-015f2d57-7c9b-4b18-bd60-e2f7ddad761e,Greater Shiloh Baptist Church,,"557 Benton St, Detroit, MI 48202",(313) 872-4850,,,,,No
-0c76bbe1-858b-4052-8fdf-77f4a3cbeb66,Church of the Messiah,,"231 E Grand Blvd, Detroit, MI 48207",(313) 633-5331,,,,,No
-cd5716f7-0d54-464a-8b04-11187e27ccbd,New Bethel Baptist Church,,"8430 Linwood St, Detroit, MI 48206",(313) 894-3134,,,,,No
-a2f9af01-c98f-4132-9302-1aed38f5cf62,Good Shepherd Lutheran Church,,"814 N Campbell St, Detroit, MI 48209",(313) 841-2911,,,,,No
+id,name,type,address,phone,latitude,longitude,hours,distance,appointment_required
+1,Inspired Vision Compassion Center,Grocery Distribution,"2019 N Masters Dr, Dallas, TX 75217",(214) 484-6393,32.747565834551885,-96.64811116384143,Mon-Fri 9:30AM-5:00PM,,No
+2,Crossroads Community Services,Food Pantry,"4500 S Cockrell Hill Rd, Dallas, TX 75236",(214) 560-2511,32.689109349999995,-96.89062552619228,Mon-Thu 8:30AM-1:30PM (Appt only),,Yes
+3,Minnie's Food Pantry,Food Pantry,"661 18th St, Plano, TX 75074",(972) 596-0253,33.02432158005315,-96.70712042856307,Wed-Sat 8:30AM-11:30AM,,No
+4,Sharing Life Community Outreach,Food Pantry,"3795 W. Emporium Circle, Mesquite, TX 75150",(972) 285-5819,32.81487531544929,-96.62571698991593,Mon-Thu 9AM-3PM; Fri 9AM-12PM; Tue 5PM-7PM,,No
+5,Jan Pruitt Community Pantry,Food Pantry,"123 Alexander Ave, Lancaster, TX 75146",(972) 591-7849,32.592492,-96.787761,Tue/Thu/Sat 8AM-2PM; Wed/Fri 12PM-3PM,,No
+6,The Bridge (Second Chance Café),Soup Kitchen,"1818 Corsicana St, Dallas, TX 75201",(214) 670-1100,32.778737050000004,-96.77865256716315,Breakfast 7:30AM-8:30AM; Lunch 12PM-1PM,,No
+7,Union Gospel Mission (Calvert Place),Soup Kitchen,"3211 Irving Blvd, Dallas, TX 75247",(214) 637-6117,32.80880985,-96.86957187771829,Daily meals (Check schedule),,No
+8,OurCalling,Hot Meal,"1702 S Cesar Chavez Blvd, Dallas, TX 75215",(214) 444-8796,32.7744294,-96.78333665409397,Mon-Fri 8:30AM-3PM (Lunch served),,No
+9,SoupMobile,Hot Meal,"2490 Coombs St, Dallas, TX 75215",(214) 655-6325,32.7699517,-96.7772221,Mobile distribution (Check website),,No
+10,Brother Bill's Helping Hand,Grocery Distribution,"3906 N. Westmoreland Rd, Dallas, TX 75212",(214) 638-2196,32.78899028921066,-96.87367920423117,Mon-Fri (Grocery Store Model - Appt Required),,Yes
+11,Oak Cliff Veggie Project,Grocery Distribution,"7227 S Westmoreland Rd, Dallas, TX 75237",,32.66005369387755,-96.88232782653061,Periodic distributions (Redbird Landing),,No
+12,Jefferson Senior Center,Senior Meals,"1617 W. Jefferson Blvd, Dallas, TX 75208",(214) 946-1369,32.7460428,-96.84750449365873,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+13,MLK Senior Center,Senior Meals,"2901 Pennsylvania Ave, Dallas, TX 75215",(214) 670-8418,32.768889,-96.765458,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+14,West Dallas Senior Center,Senior Meals,"2828 Fish Trap Rd, Dallas, TX 75212",(214) 670-6550,32.7774598,-96.86026150811108,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+15,Harry Stone Montessori (CACFP),Youth Supper (CACFP),"4747 Veterans Dr, Dallas, TX 75216",,32.693596400000004,-96.78314245349402,After School Meal (School Days),,No (Youth 18-)
+16,Martin Weiss Rec Center (CACFP),Youth Supper (CACFP),"8601 Willoughby Blvd, Dallas, TX 75232",,32.64378025,-96.82991135980426,After School Meal (School Days),,No (Youth 18-)
+17,Pleasant Oaks Rec Center (CACFP),Youth Supper (CACFP),"8701 Greenmound Ave, Dallas, TX 75227",,32.75076668398967,-96.6726193783892,After School Meal (School Days),,No (Youth 18-)
+18,Funky Town Fridge (Poly),Community Fridge,"2308 Vaughn Blvd, Fort Worth, TX 76105",,32.72230665,-97.27985546287036,24/7 Access,,No
+19,North Dallas Shared Ministries,Food Pantry,"2875 Merrell Rd, Dallas, TX 75229",(214) 358-8700,32.886885649999996,-96.88102339697949,Mon-Thu 9AM-3PM; Fri 9AM-12PM,,No
+20,Network of Community Ministries,Food Pantry,"1500 International Pkwy Ste 300, Richardson, TX 75081",(972) 234-8880,32.9661,-96.709242,Mon-Wed 8AM-4PM; Thu 8AM-7PM; Sat 9AM-2PM,,No
+21,The Wilkinson Center,Food Pantry,"3402 N. Buckner Blvd, Dallas, TX 75228",(214) 821-6380,32.80210980603296,-96.68201925092573,Mon/Wed 9AM-1PM; Tue 12PM-4PM,,Yes
+22,Salvation Army (Carr P. Collins),Hot Meal,"5302 Harry Hines Blvd, Dallas, TX 75235",(214) 424-7000,32.8127,-96.838204,Daily Meals (Call for schedule),,No
+23,The Storehouse (Seven Loaves Food Pantry),Food Pantry,"1401 Mira Vista Blvd, Plano, TX 75093",(469) 252-4015,32.979653,-96.828602,Thu 4PM-7PM; Sat 9AM-12PM,,No
+24,Voice of Hope Ministries,Food Pantry,"4120 Gentry Dr, Dallas, TX 75212",(214) 631-7027,32.791285033858266,-96.88872004461557,Fri 9AM-11AM (Drive-Thru),,No
+25,Funky Town Fridge (South Main),Community Fridge,"825 S Main St, Fort Worth, TX 76104",,32.73622842857143,-97.32577253061224,24/7 Access,,No
+26,Funky Town Fridge (Bernice),Community Fridge,"5300 Bernice St, Fort Worth, TX 76112",,32.78464535542448,-97.27931549782451,24/7 Access,,No
+27,Cornerstone Community Kitchen,Soup Kitchen,"2815 S Ervay St, Dallas, TX 75215",(214) 630-5999,32.763103400501016,-96.7792424300465,Tue/Thu Lunch; Sat Breakfast,,No
+28,Austin Street Center,Soup Kitchen,"2929 Hickory St, Dallas, TX 75226",(214) 428-4242,32.77909375,-96.77570691080524,Daily Meals (Shelter Guests Only),,No
+29,Metrocrest Services,Food Pantry,"1145 N Josey Ln, Carrollton, TX 75006",(972) 446-2100,32.955401800000004,-96.89112111265254,Mon-Fri 8:30AM-5PM; Sat 9AM-1PM,,Yes
+30,White Rock Center of Hope,Food Pantry,"10021 Garland Rd, Dallas, TX 75218",(214) 324-8996,32.8395721,-96.6959665,Mon-Fri 9AM-2PM,,Yes (Zip Code Restricted)
+31,Catholic Charities (Santa Teresita),Food Pantry,"2601 Singleton Blvd, Dallas, TX 75212",(866) 223-7500,32.7792529,-96.86411259078943,Tue/Thu 9AM-11AM,,No
+32,Salvation Army (Pleasant Grove),Food Pantry,"8341 Elam Rd, Dallas, TX 75217",(214) 398-6619,32.719477064782986,-96.6771143228196,Tue-Thu 9AM-12PM,,No
+33,Salvation Army (Oak Cliff),Food Pantry,"1617 W Jefferson Blvd, Dallas, TX 75208",(214) 941-5911,32.7460428,-96.84750449365873,Mon-Fri 9AM-12PM,,No
+34,Salvation Army (Garland),Food Pantry,"451 W Avenue D, Garland, TX 75040",(972) 272-4531,32.90884908333333,-96.63647566666667,Mon-Fri 9AM-12PM,,No
+35,Salvation Army (Irving),Food Pantry,"250 E Grauwyler Rd, Irving, TX 75061",(972) 438-6553,32.82930886157126,-96.94279210316598,Mon-Fri 9AM-12PM,,No
+36,Salvation Army (Arlington),Food Pantry,"712 W Abram St, Arlington, TX 76013",(817) 860-1836,32.7349299,-97.1156121591886,Mon-Fri 9AM-12PM,,No
+37,Community Food Bank,Grocery Distribution,"3000 Galvez Ave, Fort Worth, TX 76111",(817) 924-3333,32.76182705,-97.30351644702645,Mon-Thu 9AM-1PM,,No
+38,Tarrant Area Food Bank (Distribution),Grocery Distribution,"2600 Cullen St, Fort Worth, TX 76107",(817) 857-7100,32.76238575,-97.35354331852915,Tue/Thu 9AM-12PM (Mega Mobile Market),,No
+39,Mission Arlington,Grocery Distribution,"210 W South St, Arlington, TX 76010",(817) 277-6620,32.734904359269514,-97.1086447002769,Mon-Sat 8:30AM-5PM,,No
+40,Goodbar Senior Center,Senior Meals,"3000 Concord Dr, Mesquite, TX 75150",(972) 329-8705,32.80996124395358,-96.6437189532061,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+41,Rutherford Senior Center,Senior Meals,"900 Rutherford Dr, Mesquite, TX 75149",(972) 204-4965,32.753948,-96.575384,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+42,Evans Senior Center,Senior Meals,"1116 Hillcrest St, Mesquite, TX 75149",(972) 204-4971,32.77662359999999,-96.6154716600967,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+43,Grand Prairie Summit (Senior),Senior Meals,"2975 Esplanade, Grand Prairie, TX 75052",(972) 237-4141,32.69954763716477,-97.0279095378302,Mon-Fri 11:30AM (Congregate Meal),,Yes (60+)
+44,Exline Recreation Center (CACFP),Youth Supper (CACFP),"2525 Pine St, Dallas, TX 75215",,32.7568889,-96.76062530405909,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+45,Eloise Lundy Rec Center (CACFP),Youth Supper (CACFP),"1229 Reverend CBT Smith St, Dallas, TX 75203",,32.75570418428953,-96.80696638208863,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+46,Kiest Park Rec Center (CACFP),Youth Supper (CACFP),"3080 S Hampton Rd, Dallas, TX 75224",,32.710378240000004,-96.8568913,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+47,Thurgood Marshall Rec Center (CACFP),Youth Supper (CACFP),"5150 Mark Trail Way, Dallas, TX 75232",,32.68346792004295,-96.85527605195556,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+48,Singing Hills Rec Center (CACFP),Youth Supper (CACFP),"6805 Patrol Way, Dallas, TX 75241",,32.66687355,-96.78923367863686,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+49,Tommie Allen Rec Center (CACFP),Youth Supper (CACFP),"7071 Bonnie View Rd, Dallas, TX 75241",,32.6594871,-96.75312036218492,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+50,Fretz Park Rec Center (CACFP),Youth Supper (CACFP),"6950 Belt Line Rd, Dallas, TX 75254",,32.94986897826087,-96.78572526086955,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+51,Irving Cares,Food Pantry,"440 S Nursery Rd #101, Irving, TX 75060",(972) 721-9181,32.8099052,-96.9340535,Mon 9AM-12PM; Tue/Thu 9AM-12PM & 1PM-3:30PM,,Yes (Irving Residents)
+52,Crisis Ministries Irving,Food Pantry,"114 E 2nd St, Irving, TX 75060",(972) 254-0973,32.81274814285714,-96.94590728571428,Mon/Tue/Wed/Fri 10AM-1:15PM; Sat 10AM-12PM,,No
+53,Heritage Senior Center (Irving),Senior Meals,"200 S Jefferson St, Irving, TX 75060",(972) 721-2496,32.8127,-96.944813,Mon-Fri 11:30AM (Congregate Meal),,Yes (60+)
+54,Antioch Christian Church Pantry,Food Pantry,"2041 W Walnut Hill Ln, Irving, TX 75038",(972) 255-6336,32.86865109787238,-96.97190640855516,2nd & 4th Sat 9AM-11AM,,No
+55,Good Samaritans of Garland,Food Pantry,"214 N 12th St, Garland, TX 75040",(972) 276-2263,32.91395795652174,-96.64483708695651,Mon-Fri 9AM-3:30PM,,Yes (Garland/Rowlett/Sachse)
+56,Five Loaves Food Pantry,Food Pantry,"1002 Castle Dr, Garland, TX 75040",(972) 272-3421,32.922036969849245,-96.6169701959799,Tue/Thu 10AM-12PM; Thu 5PM-7PM; Sat 10AM-12PM,,No
+57,Salvation Army Garland (Fresh Food),Grocery Distribution,"451 W Avenue D, Garland, TX 75040",(972) 272-4531,32.90884908333333,-96.63647566666667,Mon-Fri 10AM-11:30AM (Fresh Food),,No
+58,Granger Recreation Center (Garland),Youth Supper (CACFP),"1310 W Avenue F, Garland, TX 75040",,32.906786326530614,-96.64649102040816,After School Meal (School Days),,No (Youth 18-)
+59,Fields Recreation Center (Garland),Youth Supper (CACFP),"1701 Dairy Rd, Garland, TX 75040",,32.897294926174496,-96.622304,After School Meal (School Days),,No (Youth 18-)
+60,Carver Senior Center (Garland),Senior Meals,"222 Carver St, Garland, TX 75040",(972) 205-3335,32.90701166666667,-96.62849911111111,Mon-Fri 8AM-1PM (Congregate Meal),,Yes (60+)
+61,Lavon Drive Baptist Church Pantry,Food Pantry,"1520 Lavon Dr, Garland, TX 75040",(972) 272-7557,32.92642024078065,-96.62733096215116,Wed 6PM-7:30PM,,No
+62,Lee Park Recreation Center (Irving),Youth Supper (CACFP),"3000 Pamela Dr, Irving, TX 75062",,32.847898,-96.965167,After School Meal (School Days),,No (Youth 18-)
+63,Northwest Recreation Center (Irving),Youth Supper (CACFP),"2800 Cheyenne St, Irving, TX 75062",,32.8440632,-97.0016235,After School Meal (School Days),,No (Youth 18-)
+64,Senter Park Recreation Center (Irving),Youth Supper (CACFP),"901 Senter Rd, Irving, TX 75060",,32.804991,-96.947029,After School Meal (School Days),,No (Youth 18-)
+65,Salvation Army Irving (Hot Meal),Hot Meal,"250 E Grauwyler Rd, Irving, TX 75061",(972) 438-6553,32.82930886157126,-96.94279210316598,Wed/Fri 11AM (Community Lunch),,No
+66,Hope Clinic of Garland,Grocery Distribution,"800 S 6th St, Garland, TX 75040",(469) 800-2500,32.9058778,-96.63757597844474,Periodic health/food events,,No
+67,Cornerstone Assistance Network,Food Pantry,"3500 Noble Ave, Fort Worth, TX 76111",(817) 632-6000,32.76947335,-97.29694076885627,Mon-Fri 9AM-4PM,,Yes
+68,Tarrant Area Food Bank West,Grocery Distribution,"112 Winner's Circle, Weatherford, TX 76087",(817) 857-7100,32.7589648,-97.7970748,Tue/Thu 9AM-12PM,,No
+69,Arlington Charities,Food Pantry,"811 Secretary Dr, Arlington, TX 76015",(817) 275-1511,32.70306108563213,-97.11771766207043,Mon-Fri 9AM-1PM,,Yes (Arlington Residents)
+70,Mission Arlington (Medical Clinic),Grocery Distribution,"210 W South St, Arlington, TX 76010",(817) 277-6620,32.734904359269514,-97.1086447002769,Mon-Sat 8:30AM-5PM,,No
+71,Sharing Life (Hub),Grocery Distribution,"3795 W Emporium Cir, Mesquite, TX 75150",(972) 285-5819,32.81487531544929,-96.62571698991593,Tue/Thu 9AM-1PM (Drive-Thru),,No
+72,Duncanville Outreach Ministry,Food Pantry,"202 E Cherry St, Duncanville, TX 75116",(972) 296-4986,32.652777349999994,-96.90509752476075,Mon-Fri 9:30AM-12:30PM,,Yes (Zip Code Restricted)
+73,Cedar Hill Food Pantry,Food Pantry,"403 Houston St, Cedar Hill, TX 75104",(972) 293-2822,32.58568720408163,-96.9565938367347,Sat 9AM-12PM,,Yes (Cedar Hill Residents)
+74,Grand Prairie United Charities,Food Pantry,"1417 Densman St, Grand Prairie, TX 75051",(972) 262-2014,32.735236150000006,-96.98450471128456,Mon-Thu 9AM-1PM,,Yes
+75,Desoto Food Pantry,Food Pantry,"302 N Hampton Rd, DeSoto, TX 75115",(972) 223-4050,32.595785114093964,-96.85724211409396,Mon/Thu 9AM-12PM,,Yes (Desoto Residents)
+76,Frisco Family Services,Food Pantry,"9125 Dogwood St, Frisco, TX 75033",(972) 335-9495,33.15122015,-96.81846897485578,Mon/Tue/Thu/Fri 9AM-5PM; Wed 9AM-6PM,,Yes (Frisco/ISD Only)
+77,Community Food Pantry of McKinney,Food Pantry,"307 Smith St, McKinney, TX 75069",(972) 547-4404,33.2032022,-96.6127445,Mon-Fri 1PM-3PM,,Yes (McKinney Only)
+78,Amazing Grace Food Pantry,Food Pantry,"1711 Parker Rd, Wylie, TX 75098",(972) 292-7241,33.03966052088093,-96.55042857963466,Tue 10AM-2PM; Thu 6PM-8PM; Sat 8AM-12PM,,No
+79,Arlington Urban Ministries,Food Pantry,"701 Dugan St, Arlington, TX 76010",(817) 861-8585,32.73416,-97.1005,Mon-Thu 9AM-5PM,,Yes (Arlington Residents)
+80,Water From The Rock,Food Pantry,"1015 Gibbins Rd, Arlington, TX 76011",(817) 860-9702,32.75037357575758,-97.11124944444444,Tue-Thu 10AM-12PM,,No
+81,Grand Prairie Food and Clothing Co-op,Food Pantry,"118 NE 4th St, Grand Prairie, TX 75050",(972) 264-8540,32.74596548979592,-96.99982146938775,Mon-Thu 9AM-11AM,,Yes (Zip Code Restricted)
+82,Community Lifeline Center,Food Pantry,"1601 N Waddill St, McKinney, TX 75069",(972) 542-0020,33.212456,-96.625856,Mon-Fri 9AM-4PM,,Yes (Zip Code Restricted)
+83,Allen Community Outreach,Food Pantry,"801 E Main St, Allen, TX 75002",(972) 727-9131,33.10024498979592,-96.65183417346938,Mon-Fri 8:30AM-4:30PM,,Yes (Allen/Lucas/Fairview)
+84,The Storehouse (Seven Loaves),Food Pantry,"1401 Mira Vista Blvd, Plano, TX 75093",(469) 252-4015,33.021571,-96.819331,Thu 4PM-7PM; Sat 9AM-12PM,,No
+85,Grace Bridge,Grocery Distribution,"402 S Oklahoma Dr, Celina, TX 75009",(214) 425-9423,33.32023524489796,-96.78380506122448,Sat 9AM-11AM (Drive-Thru),,No
+86,Sam Johnson Recreation Center (Plano),Senior Meals,"401 W 16th St, Plano, TX 75075",(972) 941-7155,33.022964,-96.712127,Mon-Fri 11:30AM (Congregate Meal),,Yes (60+)
+87,Eunice Activity Center (Arlington),Senior Meals,"1000 Eunice St, Arlington, TX 76010",(817) 277-8091,32.7324,-97.095249,Mon-Fri 11:30AM (Congregate Meal),,Yes (60+)
+88,Douglass Community Center (Plano),Youth Supper (CACFP),"1111 H Ave, Plano, TX 75074",,33.01378576511936,-96.70372891722803,Mon-Fri 3:30PM-4:30PM (School Days),,No (Youth 18-)
+89,Elzie Odom Athletic Center,Youth Supper (CACFP),"1601 NE Green Oaks Blvd, Arlington, TX 76006",,32.78084,-97.087023,Mon-Fri 4PM-5PM (School Days),,No (Youth 18-)
+90,The Manna House,Food Pantry,"3241A Robinson Rd, Midlothian, TX 76065",(972) 775-1800,32.4711899,-96.9540249,Tue-Fri 9AM-2PM,,Yes (Ellis County)
+91,Waxahachie Care,Food Pantry,"1208 Ferris Ave, Waxahachie, TX 75165",(972) 923-2273,32.3998138,-96.8428589,Mon-Thu 8:30AM-12:30PM,,Yes (Residents)
+92,St. Philip's Community Pantry,Food Pantry,"1600 Pennsylvania Ave, Dallas, TX 75215",(214) 421-5221,32.75954845,-96.77492229545646,Wed 8:30AM-11:30AM,,No
+93,Mesquite Church of Christ Pantry,Food Pantry,"400 W Davis St, Mesquite, TX 75149",(972) 288-7637,32.76574875,-96.60273152678784,Wed 10AM-12PM,,No
+94,Shiloh Terrace Baptist Church,Food Pantry,"9810 La Prada Dr, Dallas, TX 75228",(972) 857-9707,32.822216299999994,-96.6646618265625,Mon 9AM-12PM,,No
+95,Golden Gate Missionary Baptist,Food Pantry,"1101 Sabine St, Dallas, TX 75203",(214) 943-5010,32.755799,-96.808212,Tue/Thu 9AM-11AM,,No
+96,Salvation Army Lewisville,Hot Meal,"880 Fox Ave, Lewisville, TX 75067",(972) 353-9400,33.046056,-96.996784,Mon-Fri 12PM-1PM (Community Kitchen),,No
+97,Christian Community Action (CCA),Food Pantry,"200 S Mill St, Lewisville, TX 75057",(972) 219-4300,33.044798717647055,-96.994062,Mon-Fri 9AM-5PM,,Yes (Appt Only)
+98,Friendship House (First Baptist),Food Pantry,"620 W Avenue B, Garland, TX 75040",(972) 272-1010,32.910758244897956,-96.638031,Mon-Fri 9:30AM-3PM,,Yes (Garland Residents)
+99,Grace Bridge (Frisco),Food Pantry,"9300 Wade Blvd, Frisco, TX 75035",(214) 425-9423,33.1291942,-96.8016628,Check website for pop-up schedule,,No
+100,Streetside Showers (Meals),Hot Meal,"902 E 2nd St, Irving, TX 75060",,32.812781241677094,-96.93993040918552,Sat 10AM-1PM (Meals with showers),,No
+101,Pleasant Grove Food Pantry,Food Pantry,"1331 Bayonne St, Dallas, TX 75212",,32.7840,-96.8520,Check locally for hours,,No
+102,Vickery Meadow Food Pantry,Food Pantry,"8448 Walnut Hill Ln, Dallas, TX 75231",,32.8790,-96.7300,Check locally for hours,,No
+103,Oak Cliff Churches for Emergency Aid (OCCEA),Food Pantry,"123 S Llewellyn Ave, Dallas, TX 75208",,32.7450,-96.8320,Emergency food assistance (Call for hours),,No
+104,Dallas West Church of Christ,Food Pantry,"3510 N Hampton Rd, Dallas, TX 75212",,32.8010,-96.8640,Community pantry (Call for hours),,No

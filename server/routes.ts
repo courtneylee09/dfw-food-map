@@ -28,38 +28,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userLng = req.query.lng ? parseFloat(req.query.lng as string) : NaN;
     const hasValidUserLocation = Number.isFinite(userLat) && Number.isFinite(userLng);
 
+    console.log(`[DEBUG] /api/resources called with lat=${userLat}, lng=${userLng}, hasValidUserLocation=${hasValidUserLocation}`);
+    console.log(`[DEBUG] Total resources from storage: ${resources.length}`);
+
     let processedResources = resources.map(resource => {
+      let distanceInMiles: number | null = null;
+      
       if (hasValidUserLocation) {
         const resourceLat = parseFloat(resource.latitude);
         const resourceLng = parseFloat(resource.longitude);
         
         if (Number.isFinite(resourceLat) && Number.isFinite(resourceLng)) {
-          const distanceInMiles = calculateDistance(userLat, userLng, resourceLat, resourceLng);
-          return {
-            ...resource,
-            distance: formatDistance(distanceInMiles),
-            _distanceValue: distanceInMiles
-          };
+          const rawDistance = calculateDistance(userLat, userLng, resourceLat, resourceLng);
+          // Round to 1 decimal place for consistent display and filtering
+          distanceInMiles = Math.round(rawDistance * 10) / 10;
         }
       }
-      return resource;
+      
+      return {
+        ...resource,
+        distance: distanceInMiles,
+      };
     });
 
     if (hasValidUserLocation) {
       processedResources.sort((a, b) => {
-        const distA = (a as any)._distanceValue;
-        const distB = (b as any)._distanceValue;
+        const distA = a.distance;
+        const distB = b.distance;
         
-        if (distA !== undefined && distB !== undefined) {
-          return distA - distB;
+        if (distA !== null && distB !== null) {
+          return (distA as number) - (distB as number);
         }
-        if (distA !== undefined) return -1;
-        if (distB !== undefined) return 1;
+        if (distA !== null) return -1;
+        if (distB !== null) return 1;
         return 0;
       });
-      processedResources = processedResources.map(({ _distanceValue, ...resource }: any) => resource);
     }
 
+    console.log(`[DEBUG] Returning ${processedResources.length} processed resources`);
+    console.log(`[DEBUG] Sample resources:`, processedResources.slice(0, 2));
+    
     res.json(processedResources);
   });
 
@@ -83,9 +91,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/submissions", async (req, res) => {
     try {
       const submission = await storage.createSubmission(req.body);
+      
+      // Send email notification if configured
+      if (process.env.ADMIN_EMAIL || process.env.GMAIL_USER) {
+        const { notificationService } = await import('./notifications');
+        notificationService.sendSubmissionNotification(submission).catch(err => {
+          console.error('Notification error (non-blocking):', err);
+        });
+      }
+      
       res.status(201).json(submission);
     } catch (error) {
       res.status(400).json({ message: "Failed to create submission" });
+    }
+  });
+
+  // Get all submissions (for admin review)
+  app.get("/api/submissions", async (req, res) => {
+    try {
+      const allSubmissions = await storage.getSubmissions();
+      res.json(allSubmissions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch submissions" });
     }
   });
 

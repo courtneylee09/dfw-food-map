@@ -4,9 +4,10 @@ import ResourceCard from './ResourceCard';
 interface ResourceListProps {
   resources: FoodResource[];
   onResourceClick: (resource: FoodResource) => void;
+  searchedZip?: string | null;
 }
 
-export default function ResourceList({ resources, onResourceClick }: ResourceListProps) {
+export default function ResourceList({ resources, onResourceClick, searchedZip }: ResourceListProps) {
   if (resources.length === 0) {
     return (
       <div className="text-center py-12 px-4" data-testid="text-no-resources">
@@ -24,6 +25,7 @@ export default function ResourceList({ resources, onResourceClick }: ResourceLis
           key={resource.id}
           resource={resource}
           onClick={() => onResourceClick(resource)}
+          searchedZip={searchedZip}
         />
       ))}
     </div>
