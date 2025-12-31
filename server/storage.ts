@@ -454,5 +454,16 @@ export class DbStorage implements IStorage {
   }
 }
 
-// Use database storage if DATABASE_URL is set, otherwise use in-memory storage
-export const storage = process.env.DATABASE_URL ? new DbStorage() : new MemStorage();
+// Create a function that returns the appropriate storage at runtime
+function getStorage(): IStorage {
+  if (process.env.DATABASE_URL && db) {
+    console.log("✓ Using database storage (DbStorage)");
+    return new DbStorage();
+  } else {
+    console.log("⚠️  Using in-memory storage (MemStorage) - DATABASE_URL not configured");
+    return new MemStorage();
+  }
+}
+
+// Export storage as a getter property that evaluates at runtime
+export const storage = getStorage();
