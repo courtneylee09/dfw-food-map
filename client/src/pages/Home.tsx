@@ -11,8 +11,6 @@ import ResourceDetail from '@/components/ResourceDetail';
 import AddToHomeModal from '@/components/AddToHomeModal';
 import ZipCodeSearch from '@/components/ZipCodeSearch';
 import { FoodResource } from '@shared/schema';
-import logoImage from '@assets/logo.png';
-import logo2Image from '@assets/logo2.png';
 
 type View = 'map' | 'list' | 'detail';
 
@@ -139,13 +137,13 @@ export default function Home() {
           <div></div>
           <div className="flex items-end justify-center gap-3">
             <img
-              src={logoImage}
+              src="/logo.png"
               alt="Dallas-Fort Worth Food Resources"
               className="w-40 h-auto"
               data-testid="img-logo"
             />
             <img
-              src={logo2Image}
+              src="/logo2.png"
               alt="Food in the D"
               className="w-36 h-auto mt-4"
               data-testid="img-logo2"
