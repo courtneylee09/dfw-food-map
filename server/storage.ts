@@ -1,7 +1,7 @@
-import { type FoodResource, type InsertFoodResource, type Submission, type InsertSubmission } from "@shared/schema";
+import { type FoodResource, type InsertFoodResource, type Submission, type InsertSubmission, type UserReport, type InsertUserReport } from "@shared/schema";
 import { db } from "./db";
-import { foodResources, submissions } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { foodResources, submissions, userReports } from "@shared/schema";
+import { eq, and, lt, sql, or } from "drizzle-orm";
 
 export interface IStorage {
   getFoodResources(): Promise<FoodResource[]>;
@@ -9,6 +9,13 @@ export interface IStorage {
   createFoodResource(resource: InsertFoodResource): Promise<FoodResource>;
   createSubmission(submission: InsertSubmission): Promise<Submission>;
   getSubmissions(): Promise<Submission[]>;
+  createUserReport(report: InsertUserReport): Promise<UserReport>;
+  getReportsForResource(resourceId: string): Promise<UserReport[]>;
+  incrementReportedClosed(resourceId: string): Promise<void>;
+  markResourceAsVerified(resourceId: string, source: string): Promise<void>;
+  getResourcesNeedingVerification(daysOld: number): Promise<FoodResource[]>;
+  getFlaggedResources(): Promise<FoodResource[]>;
+  removeResource(resourceId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -412,6 +419,38 @@ export class MemStorage implements IStorage {
   async getSubmissions(): Promise<Submission[]> {
     return this.submissions;
   }
+
+  async createUserReport(report: InsertUserReport): Promise<UserReport> {
+    console.log("[MemStorage] createUserReport not fully implemented in memory storage");
+    return { id: "mem-report", ...report, reportedAt: new Date() };
+  }
+
+  async getReportsForResource(resourceId: string): Promise<UserReport[]> {
+    console.log("[MemStorage] getReportsForResource not fully implemented in memory storage");
+    return [];
+  }
+
+  async incrementReportedClosed(resourceId: string): Promise<void> {
+    console.log("[MemStorage] incrementReportedClosed not fully implemented in memory storage");
+  }
+
+  async markResourceAsVerified(resourceId: string, source: string): Promise<void> {
+    console.log("[MemStorage] markResourceAsVerified not fully implemented in memory storage");
+  }
+
+  async getResourcesNeedingVerification(daysOld: number): Promise<FoodResource[]> {
+    console.log("[MemStorage] getResourcesNeedingVerification not fully implemented in memory storage");
+    return [];
+  }
+
+  async getFlaggedResources(): Promise<FoodResource[]> {
+    console.log("[MemStorage] getFlaggedResources not fully implemented in memory storage");
+    return [];
+  }
+
+  async removeResource(resourceId: string): Promise<void> {
+    console.log("[MemStorage] removeResource not fully implemented in memory storage");
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -451,6 +490,86 @@ export class DbStorage implements IStorage {
       throw new Error("Database not configured");
     }
     return await db.select().from(submissions).orderBy(submissions.submittedAt);
+  }
+
+  async createUserReport(report: InsertUserReport): Promise<UserReport> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    const [newReport] = await db.insert(userReports).values(report).returning();
+    return newReport;
+  }
+
+  async getReportsForResource(resourceId: string): Promise<UserReport[]> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    return await db.select().from(userReports).where(eq(userReports.resourceId, resourceId));
+  }
+
+  async incrementReportedClosed(resourceId: string): Promise<void> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    const resource = await this.getFoodResource(resourceId);
+    if (resource) {
+      const currentCount = parseInt(resource.reportedClosedCount || "0");
+      await db.update(foodResources)
+        .set({
+          reportedClosed: true,
+          reportedClosedCount: String(currentCount + 1),
+          reportedClosedAt: new Date()
+        })
+        .where(eq(foodResources.id, resourceId));
+    }
+  }
+
+  async markResourceAsVerified(resourceId: string, source: string): Promise<void> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    await db.update(foodResources)
+      .set({
+        lastVerifiedDate: new Date(),
+        verificationSource: source,
+        reportedClosed: false,
+        reportedClosedCount: "0",
+        reportedClosedAt: null
+      })
+      .where(eq(foodResources.id, resourceId));
+  }
+
+  async getResourcesNeedingVerification(daysOld: number = 60): Promise<FoodResource[]> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+    
+    return await db.select()
+      .from(foodResources)
+      .where(
+        or(
+          lt(foodResources.lastVerifiedDate, cutoffDate),
+          eq(foodResources.reportedClosed, true)
+        )
+      );
+  }
+
+  async getFlaggedResources(): Promise<FoodResource[]> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    return await db.select()
+      .from(foodResources)
+      .where(eq(foodResources.reportedClosed, true));
+  }
+
+  async removeResource(resourceId: string): Promise<void> {
+    if (!db) {
+      throw new Error("Database not configured");
+    }
+    await db.delete(foodResources).where(eq(foodResources.id, resourceId));
   }
 }
 

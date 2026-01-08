@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import SubmitResource from "@/pages/SubmitResource";
+import VerificationReview from "@/pages/VerificationReview";
 import NotFound from "@/pages/not-found";
 
 const libraries: ("places" | "drawing" | "geometry" | "visualization" | "marker")[] = ['places', 'marker'];
@@ -15,6 +16,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/submit" component={SubmitResource} />
+      <Route path="/verification-review" component={VerificationReview} />
       <Route component={NotFound} />
     </Switch>
   );

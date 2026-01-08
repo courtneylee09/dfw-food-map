@@ -2,7 +2,20 @@ import { FoodResource } from '@shared/schema';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { MapPin, Clock, ArrowLeft, Phone, Calendar } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft, Phone, Calendar, Flag } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResourceDetailProps {
   resource: FoodResource;
@@ -10,9 +23,46 @@ interface ResourceDetailProps {
 }
 
 export default function ResourceDetail({ resource, onBack }: ResourceDetailProps) {
+  const [isReporting, setIsReporting] = useState(false);
+  const { toast } = useToast();
+
   const openInMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.address)}`;
     window.open(url, '_blank');
+  };
+
+  const handleReportClosed = async () => {
+    setIsReporting(true);
+    try {
+      const response = await fetch(`/api/resources/${resource.id}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportType: 'closed',
+          reportDetails: 'User reported this location as no longer serving food',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit report');
+      }
+
+      toast({
+        title: "Report submitted",
+        description: "Thank you for helping keep our information accurate. We'll review this location.",
+      });
+    } catch (error) {
+      console.error('Error reporting location:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   return (
@@ -111,6 +161,39 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
                 </div>
               </div>
             </div>
+          </Card>
+
+          <Card className="p-4 bg-muted/30">
+            <h3 className="font-semibold text-base mb-2">Help Keep This Information Accurate</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              If you visited this location and found it's no longer serving food, please let us know.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  disabled={isReporting}
+                >
+                  <Flag className="w-4 h-4 mr-2" />
+                  Report Issue
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Report This Location</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure this location is no longer serving food? This helps us keep our map accurate for families in need.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReportClosed}>
+                    Submit Report
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </Card>
         </div>
       </div>

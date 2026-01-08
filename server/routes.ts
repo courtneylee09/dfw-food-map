@@ -116,6 +116,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Report a resource as closed or problematic
+  app.post("/api/resources/:id/report", async (req, res) => {
+    try {
+      const { reportType, reportDetails, userIp } = req.body;
+      const resourceId = req.params.id;
+
+      // Verify resource exists
+      const resource = await storage.getFoodResource(resourceId);
+      if (!resource) {
+        return res.status(404).json({ message: "Resource not found" });
+      }
+
+      // Create the report
+      const report = await storage.createUserReport({
+        resourceId,
+        reportType: reportType || 'closed',
+        reportDetails: reportDetails || null,
+        userIp: userIp || req.ip || null,
+      });
+
+      // If it's a "closed" report, increment the closed count
+      if (reportType === 'closed') {
+        await storage.incrementReportedClosed(resourceId);
+      }
+
+      res.status(201).json({ message: "Report submitted successfully", report });
+    } catch (error) {
+      console.error("Error creating report:", error);
+      res.status(500).json({ message: "Failed to submit report" });
+    }
+  });
+
+  // Get resources that need verification
+  app.get("/api/resources/needs-verification", async (req, res) => {
+    try {
+      const daysOld = req.query.days ? parseInt(req.query.days as string) : 60;
+      const resources = await storage.getResourcesNeedingVerification(daysOld);
+      res.json(resources);
+    } catch (error) {
+      console.error("Error fetching resources needing verification:", error);
+      res.status(500).json({ message: "Failed to fetch resources" });
+    }
+  });
+
+  // Get flagged resources (reported as closed)
+  app.get("/api/resources/flagged", async (req, res) => {
+    try {
+      const resources = await storage.getFlaggedResources();
+      res.json(resources);
+    } catch (error) {
+      console.error("Error fetching flagged resources:", error);
+      res.status(500).json({ message: "Failed to fetch flagged resources" });
+    }
+  });
+
+  // Mark a resource as verified
+  app.post("/api/resources/:id/verify", async (req, res) => {
+    try {
+      const { source } = req.body;
+      await storage.markResourceAsVerified(req.params.id, source || 'manual');
+      res.json({ message: "Resource marked as verified" });
+    } catch (error) {
+      console.error("Error verifying resource:", error);
+      res.status(500).json({ message: "Failed to verify resource" });
+    }
+  });
+
+  // Remove a resource (if confirmed closed)
+  app.delete("/api/resources/:id", async (req, res) => {
+    try {
+      await storage.removeResource(req.params.id);
+      res.json({ message: "Resource removed successfully" });
+    } catch (error) {
+      console.error("Error removing resource:", error);
+      res.status(500).json({ message: "Failed to remove resource" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

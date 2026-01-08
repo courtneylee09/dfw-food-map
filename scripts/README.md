@@ -4,6 +4,37 @@ This folder contains utility scripts for managing your food resources database.
 
 ## Scripts Overview
 
+### `weekly-verification.ts` ⭐ NEW
+**Identifies locations that need verification to ensure data accuracy.**
+
+**Usage:**
+```bash
+# Run with default 60-day threshold
+npm run verify:weekly
+
+# Run with custom threshold
+npx tsx scripts/weekly-verification.ts --days=90
+
+# Export results to CSV
+npm run verify:csv
+```
+
+**What it does:**
+- Scans database for locations not verified in 60+ days
+- Identifies locations reported as closed by users
+- Generates detailed report sorted by urgency
+- Optionally exports to CSV for spreadsheet review
+
+**Output includes:**
+- Total resources and verification statistics
+- List of locations needing attention
+- Days since last verification
+- Report counts for flagged locations
+
+**Recommended:** Set up as weekly cron job to automate monitoring.
+
+---
+
 ### `import-csv-to-db.ts`
 Imports food resource data from a CSV file into the database.
 
