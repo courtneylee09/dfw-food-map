@@ -57,8 +57,12 @@ export default function FilterPills({ onFilterChange, activeFilter }: FilterPill
   return (
     <div className="relative">
       <div
-        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory"
+        className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide snap-x snap-mandatory px-1"
         data-testid="filter-pills-container"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
       >
         {filters.map((filter) => {
           const colors = filterColors[filter];
@@ -68,15 +72,16 @@ export default function FilterPills({ onFilterChange, activeFilter }: FilterPill
             <Badge
               key={filter}
               variant="outline"
-              className="cursor-pointer whitespace-nowrap px-4 py-2 text-base font-medium min-h-11 snap-start flex items-center transition-all"
+              className="cursor-pointer whitespace-nowrap px-4 py-2.5 text-sm font-semibold min-h-10 snap-start flex items-center transition-all shadow-sm hover:shadow-md active:scale-95"
               onClick={() => onFilterChange(filter)}
               data-testid={`filter-${filter.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`}
               style={{
-                backgroundColor: colors.bg,
-                color: '#000000',
-                borderColor: colors.border,
-                borderWidth: isActive ? '3px' : '2px',
-                opacity: isActive ? 1 : 0.85,
+                backgroundColor: isActive ? colors.bg : '#ffffff',
+                color: isActive ? colors.text : colors.bg,
+                borderColor: colors.bg,
+                borderWidth: '2px',
+                opacity: 1,
+                boxShadow: isActive ? `0 4px 12px ${colors.bg}40` : '0 1px 3px rgba(0,0,0,0.1)',
               }}
             >
               {filter}
@@ -84,8 +89,8 @@ export default function FilterPills({ onFilterChange, activeFilter }: FilterPill
           );
         })}
       </div>
-      <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none flex items-center justify-end">
-        <ChevronRight className="w-4 h-4 text-muted-foreground" data-testid="icon-scroll-indicator" />
+      <div className="absolute right-0 top-0 bottom-3 w-12 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none flex items-center justify-end pr-2">
+        <ChevronRight className="w-5 h-5 text-muted-foreground/60 animate-pulse" data-testid="icon-scroll-indicator" />
       </div>
     </div>
   );
