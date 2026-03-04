@@ -131,8 +131,8 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen-safe flex flex-col bg-black overflow-hidden">
-      <div className="flex-none p-3 border-b space-y-2 bg-black text-white border-white/20">
+    <div className="h-screen-safe flex flex-col bg-white overflow-hidden">
+      <div className="flex-none p-3 border-b space-y-2 bg-white text-[#002145] border-slate-200">
         <div className="grid grid-cols-3 items-center mb-1">
           <div></div>
           <div className="flex items-center justify-center">
@@ -153,7 +153,7 @@ export default function Home() {
             <Plus className="w-6 h-6" />
           </Button>
         </div>
-        <p className="text-base text-white/80 text-center">
+        <p className="text-base text-[#002145]/80 text-center">
           Find free meals and groceries near you
         </p>
 
@@ -203,7 +203,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 relative overflow-hidden bg-black">
+      <div className="flex-1 min-h-0 relative overflow-hidden bg-white">
         {view === 'map' ? (
           <GoogleMapWrapper>
             <ResourceMap
