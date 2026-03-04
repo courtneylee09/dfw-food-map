@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { normalizeHours } from "@shared/hours";
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3959; // Earth's radius in miles
@@ -47,6 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       return {
         ...resource,
+        hours: normalizeHours(resource.hours, resource.type),
         distance: distanceInMiles,
       };
     });
@@ -76,7 +78,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!resource) {
       return res.status(404).json({ message: "Resource not found" });
     }
-    res.json(resource);
+    res.json({
+      ...resource,
+      hours: normalizeHours(resource.hours, resource.type),
+    });
   });
 
   app.post("/api/resources", async (req, res) => {

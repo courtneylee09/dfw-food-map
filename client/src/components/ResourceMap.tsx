@@ -2,6 +2,7 @@ import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { GoogleMap } from '@react-google-maps/api';
 import { FoodResource } from '@shared/schema';
 import { createGoogleMapIcon, type ResourceType } from './MapIcons';
+import { getDisplayHours } from '@shared/hours';
 
 interface ResourceMapProps {
   resources: FoodResource[];
@@ -132,7 +133,8 @@ export default function ResourceMap({
             const approxText = typeof resource.distance === 'number' && searchedZip
               ? `Approx ${Math.round(resource.distance)} miles from ${searchedZip}`
               : undefined;
-            const content = `<div style="max-width:220px"><strong>${escapeHtml(resource.name)}</strong><div style=\"font-size:12px;color:#444;\">${escapeHtml(resource.type || '')}</div>${resource.address ? `<div style=\"font-size:12px;color:#444;\">${escapeHtml(resource.address)} </div>` : ''}${approxText ? `<div style=\"margin-top:6px;font-size:12px;color:#666;\">${escapeHtml(approxText)}</div>` : ''}</div>`;
+            const displayHours = getDisplayHours(resource);
+            const content = `<div style="max-width:220px"><strong>${escapeHtml(resource.name)}</strong><div style=\"font-size:12px;color:#444;\">${escapeHtml(resource.type || '')}</div>${resource.address ? `<div style=\"font-size:12px;color:#444;\">${escapeHtml(resource.address)} </div>` : ''}<div style=\"margin-top:6px;font-size:12px;color:#444;\"><strong>Hours:</strong> ${escapeHtml(displayHours)}</div>${approxText ? `<div style=\"margin-top:6px;font-size:12px;color:#666;\">${escapeHtml(approxText)}</div>` : ''}</div>`;
             infoWindowRef.current.setContent(content);
             // For AdvancedMarker, anchor by position
             infoWindowRef.current.setPosition(position);

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { getDisplayHours } from '@shared/hours';
 
 interface ResourceDetailProps {
   resource: FoodResource;
@@ -25,6 +26,7 @@ interface ResourceDetailProps {
 export default function ResourceDetail({ resource, onBack }: ResourceDetailProps) {
   const [isReporting, setIsReporting] = useState(false);
   const { toast } = useToast();
+  const displayHours = getDisplayHours(resource);
 
   const openInMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resource.address)}`;
@@ -111,19 +113,17 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
                 </div>
               </div>
 
-              {resource.hours && (
-                <div className="pt-4 border-t">
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                    <div className="flex-1">
-                      <h3 className="font-bold text-base mb-1">Hours</h3>
-                      <p className="text-base" data-testid="text-hours">
-                        {resource.hours}
-                      </p>
-                    </div>
+              <div className="pt-4 border-t">
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-base mb-1">Hours</h3>
+                    <p className="text-base" data-testid="text-hours">
+                      {displayHours}
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
 
               {resource.phone && (
                 <div className="pt-4 border-t">

@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
+import { getDisplayHours } from '@shared/hours';
 
 interface ResourceCardProps {
   resource: FoodResource;
@@ -44,6 +45,7 @@ const resourceColors: Record<ResourceType, { bg: string; border: string }> = {
 
 export default function ResourceCard({ resource, onClick, searchedZip }: ResourceCardProps) {
   const colors = resourceColors[resource.type as ResourceType] || resourceColors['Food Pantry'];
+  const displayHours = getDisplayHours(resource);
 
   return (
     <Card
@@ -90,12 +92,10 @@ export default function ResourceCard({ resource, onClick, searchedZip }: Resourc
             </div>
           </div>
         </div>
-        {resource.hours && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Clock className="w-4 h-4 flex-shrink-0" />
-            <span data-testid={`text-hours-${resource.id}`}>{resource.hours}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="w-4 h-4 flex-shrink-0" />
+          <span data-testid={`text-hours-${resource.id}`}>{displayHours}</span>
+        </div>
       </div>
     </Card>
   );
