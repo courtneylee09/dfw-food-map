@@ -131,35 +131,29 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen-safe flex flex-col bg-background overflow-hidden">
-      <div className="flex-none p-3 border-b space-y-2">
+    <div className="h-screen-safe flex flex-col bg-black overflow-hidden">
+      <div className="flex-none p-3 border-b space-y-2 bg-black text-white border-white/20">
         <div className="grid grid-cols-3 items-center mb-1">
           <div></div>
-          <div className="flex items-end justify-center gap-3">
+          <div className="flex items-center justify-center">
             <img
-              src="/logo.png"
-              alt="Dallas-Fort Worth Food Resources"
-              className="w-40 h-auto"
+              src="/final.jpg"
+              alt="Food in the DFW"
+              className="w-full max-w-[440px] h-auto"
               data-testid="img-logo"
-            />
-            <img
-              src="/logo2.png"
-              alt="Food in the D"
-              className="w-36 h-auto mt-4"
-              data-testid="img-logo2"
             />
           </div>
           <Button
             size="icon"
             variant="ghost"
-            className="justify-self-end bg-[#002145] text-[#fff]"
+            className="justify-self-end bg-[#002145] text-[#fff] hover:bg-[#12345d]"
             onClick={() => setLocation('/submit')}
             data-testid="button-add-resource"
           >
             <Plus className="w-6 h-6" />
           </Button>
         </div>
-        <p className="text-base text-muted-foreground text-center">
+        <p className="text-base text-white/80 text-center">
           Find free meals and groceries near you
         </p>
 
@@ -209,7 +203,7 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 relative overflow-hidden">
+      <div className="flex-1 min-h-0 relative overflow-hidden bg-black">
         {view === 'map' ? (
           <GoogleMapWrapper>
             <ResourceMap
