@@ -139,7 +139,7 @@ export default function Home() {
             <img
               src="/final.jpg"
               alt="Food in the DFW"
-              className="w-full max-w-[440px] h-auto"
+              className="w-full max-w-[520px] h-auto"
               data-testid="img-logo"
             />
           </div>
