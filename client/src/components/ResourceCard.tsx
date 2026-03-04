@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
 import { getDisplayHours } from '@shared/hours';
+import { formatDistanceMiles } from '@shared/distance';
 
 interface ResourceCardProps {
   resource: FoodResource;
@@ -72,19 +73,19 @@ export default function ResourceCard({ resource, onClick, searchedZip }: Resourc
               >
                 {resource.type}
               </Badge>
-              {resource.distance && (
+              {(resource.distance !== null && resource.distance !== undefined) && (
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <MapPin className="w-3 h-3" />
                     <span data-testid={`text-distance-${resource.id}`}>
                       {typeof resource.distance === 'number'
-                        ? `${resource.distance.toFixed(1)} mi`
+                        ? formatDistanceMiles(resource.distance)
                         : resource.distance}
                     </span>
                   </div>
                   {typeof resource.distance === 'number' && searchedZip && (
                     <div className="text-xs text-muted-foreground">
-                      {`approx ${resource.distance < 0.1 ? '<0.1' : resource.distance.toFixed(1)} miles from ${searchedZip}`}
+                      {`approx ${formatDistanceMiles(resource.distance).replace(' mi', '')} miles from ${searchedZip}`}
                     </div>
                   )}
                 </div>

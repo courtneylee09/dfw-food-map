@@ -15,12 +15,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-function formatDistance(miles: number): string {
-  if (miles < 0.1) return '< 0.1 mi';
-  if (miles < 1) return `${miles.toFixed(1)} mi`;
-  return `${miles.toFixed(1)} mi`;
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/resources", async (req, res) => {
     const resources = await storage.getFoodResources();
@@ -40,9 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const resourceLng = parseFloat(resource.longitude);
         
         if (Number.isFinite(resourceLat) && Number.isFinite(resourceLng)) {
-          const rawDistance = calculateDistance(userLat, userLng, resourceLat, resourceLng);
-          // Round to 1 decimal place for consistent display and filtering
-          distanceInMiles = Math.round(rawDistance * 10) / 10;
+          distanceInMiles = calculateDistance(userLat, userLng, resourceLat, resourceLng);
         }
       }
       

@@ -54,9 +54,7 @@ export default function Home() {
     if (zipSearchActive) {
       // Only include resources with a numeric distance AND within range
       if (typeof resource.distance === 'number') {
-        // Add 10% tolerance to avoid filtering out resources just over the boundary due to rounding
-        const tolerance = maxDistance * 0.1;
-        return resource.distance <= maxDistance + tolerance;
+        return resource.distance <= maxDistance;
       }
       // If distance is missing or non-numeric, exclude it when searching by ZIP
       return false;
@@ -74,6 +72,8 @@ export default function Home() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setUserLocation([position.coords.latitude, position.coords.longitude]);
+        setZipSearchActive(false);
+        setSearchedZip(null);
         console.log('Location updated:', position.coords);
       },
       (error) => {
