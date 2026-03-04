@@ -250,6 +250,11 @@ export default function Home() {
           </div>
         </div>
       )}
+      <div className="flex-none border-t px-3 py-2 bg-white text-[#002145]">
+        <p className="text-xs leading-relaxed" data-testid="text-acronym-legend">
+          Legend: DFW = Dallas-Fort Worth · ZIP = ZIP code · CACFP = Child and Adult Care Food Program · Appt = Appointment
+        </p>
+      </div>
       <div className="flex-none border-t p-2">
         <FilterPills
           activeFilter={activeFilter}
