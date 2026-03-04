@@ -13,7 +13,13 @@ async function main() {
   let changed = 0;
 
   for (const resource of resources) {
-    const nextHours = normalizeHours(resource.hours, resource.type);
+    const nextHours = normalizeHours({
+      hours: resource.hours,
+      type: resource.type,
+      name: resource.name,
+      phone: resource.phone,
+      appointmentRequired: resource.appointmentRequired,
+    });
     const currentHours = resource.hours ?? '';
 
     if (nextHours !== currentHours) {

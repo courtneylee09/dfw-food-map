@@ -48,7 +48,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       return {
         ...resource,
-        hours: normalizeHours(resource.hours, resource.type),
+        hours: normalizeHours({
+          hours: resource.hours,
+          type: resource.type,
+          name: resource.name,
+          phone: resource.phone,
+          appointmentRequired: resource.appointmentRequired,
+        }),
         distance: distanceInMiles,
       };
     });
@@ -80,7 +86,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     res.json({
       ...resource,
-      hours: normalizeHours(resource.hours, resource.type),
+      hours: normalizeHours({
+        hours: resource.hours,
+        type: resource.type,
+        name: resource.name,
+        phone: resource.phone,
+        appointmentRequired: resource.appointmentRequired,
+      }),
     });
   });
 
