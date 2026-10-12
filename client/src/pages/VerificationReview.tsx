@@ -1,19 +1,58 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, MapPin, Clock, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { CheckCircle, XCircle, MapPin, Clock, AlertTriangle, Lock } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
+
+const PASSWORD_KEY = 'adminPassword';
+
+function loadPassword(): string {
+  try {
+    return sessionStorage.getItem(PASSWORD_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function savePassword(value: string) {
+  try {
+    if (value) sessionStorage.setItem(PASSWORD_KEY, value);
+    else sessionStorage.removeItem(PASSWORD_KEY);
+  } catch {
+    // Storage unavailable; password lasts only for this page view
+  }
+}
+
+class UnauthorizedError extends Error {}
 
 export default function VerificationReview() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [password, setPassword] = useState(loadPassword);
+  const [passwordInput, setPasswordInput] = useState('');
+
+  const adminFetch = async (url: string, init: RequestInit = {}) => {
+    const response = await fetch(url, {
+      ...init,
+      headers: { ...init.headers, 'X-Admin-Password': password },
+    });
+    if (response.status === 401) {
+      savePassword('');
+      setPassword('');
+      throw new UnauthorizedError('Invalid admin password');
+    }
+    return response;
+  };
 
   const { data: flaggedResources, isLoading } = useQuery<FoodResource[]>({
-    queryKey: ['flagged-resources'],
+    queryKey: ['flagged-resources', password],
+    enabled: !!password,
     queryFn: async () => {
-      const response = await fetch('/api/resources/flagged');
+      const response = await adminFetch('/api/resources/flagged');
       if (!response.ok) throw new Error('Failed to fetch flagged resources');
       return response.json();
     },
@@ -21,7 +60,7 @@ export default function VerificationReview() {
 
   const verifyMutation = useMutation({
     mutationFn: async (resourceId: string) => {
-      const response = await fetch(`/api/resources/${resourceId}/verify`, {
+      const response = await adminFetch(`/api/resources/${resourceId}/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ source: 'manual_review' }),
@@ -47,7 +86,7 @@ export default function VerificationReview() {
 
   const removeMutation = useMutation({
     mutationFn: async (resourceId: string) => {
-      const response = await fetch(`/api/resources/${resourceId}`, {
+      const response = await adminFetch(`/api/resources/${resourceId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to remove resource');
@@ -68,6 +107,43 @@ export default function VerificationReview() {
       });
     },
   });
+
+  if (!password) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Location Verification Review</h1>
+        <Card className="p-6 max-w-md">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const value = passwordInput.trim();
+              if (!value) return;
+              savePassword(value);
+              setPassword(value);
+              setPasswordInput('');
+            }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-muted-foreground" />
+              <p className="font-semibold">Admin password required</p>
+            </div>
+            <Input
+              type="password"
+              autoComplete="current-password"
+              placeholder="Admin password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              autoFocus
+            />
+            <Button type="submit" className="w-full">
+              Continue
+            </Button>
+          </form>
+        </Card>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

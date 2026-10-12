@@ -1,7 +1,22 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import { createHash, timingSafeEqual } from "crypto";
 import { storage } from "./storage";
 import { normalizeHours } from "@shared/hours";
+
+// Admin-only routes require the X-Admin-Password header to match ADMIN_PASSWORD
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const expected = process.env.ADMIN_PASSWORD;
+  if (!expected) {
+    return res.status(503).json({ message: "Admin access is not configured" });
+  }
+  const provided = req.get("x-admin-password") || "";
+  const hash = (value: string) => createHash("sha256").update(value).digest();
+  if (!timingSafeEqual(hash(provided), hash(expected))) {
+    return res.status(401).json({ message: "Invalid admin password" });
+  }
+  next();
+}
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3959; // Earth's radius in miles
@@ -71,6 +86,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(processedResources);
   });
 
+  // Admin list routes must be registered before /api/resources/:id,
+  // otherwise Express treats "flagged" and "needs-verification" as an id
+
+  // Get resources that need verification
+  app.get("/api/resources/needs-verification", requireAdmin, async (req, res) => {
+    try {
+      const daysOld = req.query.days ? parseInt(req.query.days as string) : 60;
+      const resources = await storage.getResourcesNeedingVerification(daysOld);
+      res.json(resources);
+    } catch (error) {
+      console.error("Error fetching resources needing verification:", error);
+      res.status(500).json({ message: "Failed to fetch resources" });
+    }
+  });
+
+  // Get flagged resources (reported as closed)
+  app.get("/api/resources/flagged", requireAdmin, async (req, res) => {
+    try {
+      const resources = await storage.getFlaggedResources();
+      res.json(resources);
+    } catch (error) {
+      console.error("Error fetching flagged resources:", error);
+      res.status(500).json({ message: "Failed to fetch flagged resources" });
+    }
+  });
+
   app.get("/api/resources/:id", async (req, res) => {
     const resource = await storage.getFoodResource(req.params.id);
     if (!resource) {
@@ -88,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.post("/api/resources", async (req, res) => {
+  app.post("/api/resources", requireAdmin, async (req, res) => {
     try {
       const resource = await storage.createFoodResource(req.body);
       res.status(201).json(resource);
@@ -116,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all submissions (for admin review)
-  app.get("/api/submissions", async (req, res) => {
+  app.get("/api/submissions", requireAdmin, async (req, res) => {
     try {
       const allSubmissions = await storage.getSubmissions();
       res.json(allSubmissions);
@@ -157,31 +198,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get resources that need verification
-  app.get("/api/resources/needs-verification", async (req, res) => {
-    try {
-      const daysOld = req.query.days ? parseInt(req.query.days as string) : 60;
-      const resources = await storage.getResourcesNeedingVerification(daysOld);
-      res.json(resources);
-    } catch (error) {
-      console.error("Error fetching resources needing verification:", error);
-      res.status(500).json({ message: "Failed to fetch resources" });
-    }
-  });
-
-  // Get flagged resources (reported as closed)
-  app.get("/api/resources/flagged", async (req, res) => {
-    try {
-      const resources = await storage.getFlaggedResources();
-      res.json(resources);
-    } catch (error) {
-      console.error("Error fetching flagged resources:", error);
-      res.status(500).json({ message: "Failed to fetch flagged resources" });
-    }
-  });
-
   // Mark a resource as verified
-  app.post("/api/resources/:id/verify", async (req, res) => {
+  app.post("/api/resources/:id/verify", requireAdmin, async (req, res) => {
     try {
       const { source } = req.body;
       await storage.markResourceAsVerified(req.params.id, source || 'manual');
@@ -193,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove a resource (if confirmed closed)
-  app.delete("/api/resources/:id", async (req, res) => {
+  app.delete("/api/resources/:id", requireAdmin, async (req, res) => {
     try {
       await storage.removeResource(req.params.id);
       res.json({ message: "Resource removed successfully" });
