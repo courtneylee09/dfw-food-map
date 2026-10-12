@@ -135,14 +135,12 @@ export default function Home() {
       <div className="flex-none p-3 border-b space-y-2 bg-white text-[#002145] border-slate-200">
         <div className="relative flex items-center justify-center mb-1 min-h-12">
           <div className="flex items-center justify-center w-full pr-14 pl-2 sm:px-12">
-            <div className="w-[88vw] sm:w-full max-w-[640px] h-[66px] sm:h-[82px] overflow-hidden">
-              <img
-                src="/final.jpg"
-                alt="Food in the DFW"
-                className="w-full h-full object-cover object-center"
-                data-testid="img-logo"
-              />
-            </div>
+            <img
+              src="/logo-header.png"
+              alt="Food in the DFW"
+              className="w-auto max-w-full h-[68px] sm:h-[104px] object-contain"
+              data-testid="img-logo"
+            />
           </div>
           <Button
             size="icon"

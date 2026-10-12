@@ -2,7 +2,7 @@ import { FoodResource } from '@shared/schema';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { MapPin, Clock, ArrowLeft, Phone, Calendar, Flag } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft, Phone, Calendar, Flag, Info } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -91,6 +91,19 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
               {resource.type}
             </Badge>
           </div>
+
+          {resource.notes && (
+            <div
+              className="flex items-start gap-3 rounded-md border border-amber-300 bg-amber-50 p-4 text-amber-950"
+              data-testid="text-notes"
+            >
+              <Info className="w-5 h-5 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-bold text-base mb-1">Good to know</h3>
+                <p className="text-base">{resource.notes}</p>
+              </div>
+            </div>
+          )}
 
           <Card className="p-4">
             <div className="space-y-4">

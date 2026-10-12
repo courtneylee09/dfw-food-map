@@ -458,7 +458,7 @@ export class DbStorage implements IStorage {
     if (!db) {
       throw new Error("Database not configured");
     }
-    return await db.select().from(foodResources);
+    return await db.select().from(foodResources).where(sql`${foodResources.hidden} IS NOT TRUE`);
   }
 
   async getFoodResource(id: string): Promise<FoodResource | undefined> {

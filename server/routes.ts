@@ -114,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/resources/:id", async (req, res) => {
     const resource = await storage.getFoodResource(req.params.id);
-    if (!resource) {
+    if (!resource || resource.hidden) {
       return res.status(404).json({ message: "Resource not found" });
     }
     res.json({

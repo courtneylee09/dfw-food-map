@@ -19,6 +19,11 @@ export const foodResources = pgTable("food_resources", {
   reportedClosed: boolean("reported_closed").default(false),
   reportedClosedCount: varchar("reported_closed_count").default("0"),
   reportedClosedAt: timestamp("reported_closed_at"),
+  // Short public note, e.g. "Not accepting new clients until Jan 2027"
+  notes: text("notes"),
+  // Hidden listings stay in the database but are not shown on the map
+  hidden: boolean("hidden").default(false),
+  hiddenReason: text("hidden_reason"),
 });
 
 export const submissions = pgTable("submissions", {

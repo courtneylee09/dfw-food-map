@@ -16,3 +16,5 @@ geocoding-failed.json
 # Replit files
 .config/
 .local/
+# Verification agent run reports
+verification-runs/

@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock, Info } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
 import { getDisplayHours } from '@shared/hours';
 import { formatDistanceMiles } from '@shared/distance';
@@ -97,6 +97,12 @@ export default function ResourceCard({ resource, onClick, searchedZip }: Resourc
           <Clock className="w-4 h-4 flex-shrink-0" />
           <span data-testid={`text-hours-${resource.id}`}>{displayHours}</span>
         </div>
+        {resource.notes && (
+          <div className="flex items-start gap-2 text-sm text-amber-900">
+            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span data-testid={`text-notes-${resource.id}`}>{resource.notes}</span>
+          </div>
+        )}
       </div>
     </Card>
   );

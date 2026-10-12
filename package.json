@@ -14,6 +14,7 @@
     "verify:csv": "tsx scripts/weekly-verification.ts --csv"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@geoapify/geocoder-autocomplete": "^2.2.1",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
