@@ -35,7 +35,9 @@ jobs:
 
       # The server bundle imports vite at runtime, so ship node_modules with devDependencies
       - name: Package
-        run: zip -qry deploy.zip dist node_modules package.json package-lock.json
+        run: |
+          echo "{\"sha\":\"$GITHUB_SHA\"}" > dist/version.json
+          zip -qry deploy.zip dist node_modules package.json package-lock.json
 
       - uses: azure/login@v2
         with:
@@ -49,11 +51,16 @@ jobs:
           app-name: dfwfoodmap
           package: deploy.zip
 
+      # Zip deploy replaces the files but doesn't always restart Node, which leaves the old server running
+      - name: Restart app
+        run: az webapp restart --name dfwfoodmap --resource-group techsavvy-rg
+
       - name: Smoke test
         run: |
           for i in $(seq 1 30); do
+            sha=$(curl -s https://dfwfoodmap.azurewebsites.net/api/health | sed -n 's/.*"sha":"\([^"]*\)".*/\1/p' || true)
             code=$(curl -s -o /dev/null -w "%{http_code}" https://dfwfoodmap.azurewebsites.net/api/resources || true)
-            if [ "$code" = "200" ]; then echo "Site is up"; exit 0; fi
-            echo "Waiting for site (got $code)..."; sleep 10
+            if [ "$sha" = "$GITHUB_SHA" ] && [ "$code" = "200" ]; then echo "New version $sha is live"; exit 0; fi
+            echo "Waiting for new version (running: ${sha:-none}, api: $code)..."; sleep 10
           done
-          echo "Site did not come up"; exit 1
+          echo "New version did not come up"; exit 1

@@ -1,4 +1,6 @@
 import type { Express } from "express";
+import fs from "fs";
+import path from "path";
 import { createServer, type Server } from "http";
 import { AuthError, createVerifier, getActivity, listVerifiers, login, logActivity, logout, requireRole, updateVerifier } from "./auth";
 import { storage } from "./storage";
@@ -186,6 +188,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error creating report:", error);
       res.status(500).json({ message: "Failed to submit report" });
     }
+  });
+
+  // Which build is running (the deploy workflow writes dist/version.json)
+  app.get("/api/health", (_req, res) => {
+    let sha = "unknown";
+    try {
+      sha = JSON.parse(fs.readFileSync(path.resolve(import.meta.dirname, "version.json"), "utf8")).sha ?? sha;
+    } catch {
+      // Local builds have no version file
+    }
+    res.json({ ok: true, sha });
   });
 
   // Sign-in for the review page
