@@ -84,7 +84,7 @@ export class MemStorage implements IStorage {
     {
       id: 'dfw-union-gospel-1',
       name: 'Union Gospel Mission Tarrant County',
-      type: 'Hot Meal',
+      type: 'Free Meals',
       address: '1331 E Lancaster Ave, Fort Worth, TX 76102',
       latitude: '32.7393',
       longitude: '-97.2953',
@@ -108,7 +108,7 @@ export class MemStorage implements IStorage {
     {
       id: 'dfw-soupmobile-1',
       name: 'SoupMobile',
-      type: 'Soup Kitchen',
+      type: 'Free Meals',
       address: '2490 Coombs St, Dallas, TX 75215',
       latitude: '32.7859',
       longitude: '-96.7749',
@@ -144,7 +144,7 @@ export class MemStorage implements IStorage {
     {
       id: '4',
       name: 'Hot Meal Program',
-      type: 'Hot Meal',
+      type: 'Free Meals',
       address: '500 Elm St, Dallas, TX 75202',
       latitude: '32.7767',
       longitude: '-96.7970',
@@ -217,7 +217,7 @@ export class MemStorage implements IStorage {
     {
       id: 'bridge-1',
       name: 'The Bridge (Second Chance Café)',
-      type: 'Soup Kitchen',
+      type: 'Free Meals',
       address: '1610 S Malcolm X Blvd, Dallas, TX 75226',
       latitude: '32.7598',
       longitude: '-96.7643',
@@ -229,7 +229,7 @@ export class MemStorage implements IStorage {
     {
       id: 'union-gospel-2',
       name: 'Union Gospel Mission (Calvert Place)',
-      type: 'Soup Kitchen',
+      type: 'Free Meals',
       address: '3211 Irving Blvd, Dallas, TX 75247',
       latitude: '32.7751',
       longitude: '-96.8428',
@@ -241,7 +241,7 @@ export class MemStorage implements IStorage {
     {
       id: 'ourcalling-1',
       name: 'OurCalling',
-      type: 'Hot Meal',
+      type: 'Free Meals',
       address: '1702 S Cesar Chavez Blvd, Dallas, TX 75215',
       latitude: '32.7722',
       longitude: '-96.7857',
@@ -253,7 +253,7 @@ export class MemStorage implements IStorage {
     {
       id: 'soupmobile-2',
       name: 'SoupMobile',
-      type: 'Hot Meal',
+      type: 'Free Meals',
       address: '2490 Coombs St, Dallas, TX 75215',
       latitude: '32.7859',
       longitude: '-96.7749',
@@ -265,7 +265,7 @@ export class MemStorage implements IStorage {
     {
       id: 'brother-bill-1',
       name: 'Brother Bill\'s Helping Hand',
-      type: 'Grocery Distribution',
+      type: 'Food Distribution',
       address: '3906 N. Westmoreland Rd, Dallas, TX 75212',
       latitude: '32.8374',
       longitude: '-96.7923',
@@ -277,7 +277,7 @@ export class MemStorage implements IStorage {
     {
       id: 'oak-cliff-veggie-1',
       name: 'Oak Cliff Veggie Project',
-      type: 'Grocery Distribution',
+      type: 'Food Distribution',
       address: '7227 S Westmoreland Rd, Dallas, TX 75237',
       latitude: '32.5932',
       longitude: '-96.8249',
@@ -325,7 +325,7 @@ export class MemStorage implements IStorage {
     {
       id: 'harry-stone-1',
       name: 'Harry Stone Montessori (CACFP)',
-      type: 'Youth Supper (CACFP)',
+      type: "Kids' Free Meals",
       address: '4747 Veterans Dr, Dallas, TX 75216',
       latitude: '32.7515',
       longitude: '-96.6780',
@@ -337,7 +337,7 @@ export class MemStorage implements IStorage {
     {
       id: 'martin-weiss-1',
       name: 'Martin Weiss Rec Center (CACFP)',
-      type: 'Youth Supper (CACFP)',
+      type: "Kids' Free Meals",
       address: '8601 Willoughby Blvd, Dallas, TX 75232',
       latitude: '32.6847',
       longitude: '-96.5964',
@@ -349,7 +349,7 @@ export class MemStorage implements IStorage {
     {
       id: 'pleasant-oaks-1',
       name: 'Pleasant Oaks Rec Center (CACFP)',
-      type: 'Youth Supper (CACFP)',
+      type: "Kids' Free Meals",
       address: '8701 Greenmound Ave, Dallas, TX 75227',
       latitude: '32.6476',
       longitude: '-96.5583',

@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { createHash, timingSafeEqual } from "crypto";
 import { storage } from "./storage";
 import { normalizeHours } from "@shared/hours";
+import { LEGACY_CATEGORY_NAMES } from "@shared/categories";
 import { getRecentAutoVerified, getReviewQueue, resolveCheck, ResolveError } from "./verification";
 
 // Admin-only routes require the X-Admin-Password header to match ADMIN_PASSWORD
@@ -56,6 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       return {
         ...resource,
+        type: LEGACY_CATEGORY_NAMES[resource.type] ?? resource.type,
         hours: normalizeHours({
           hours: resource.hours,
           type: resource.type,
@@ -120,6 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     res.json({
       ...resource,
+      type: LEGACY_CATEGORY_NAMES[resource.type] ?? resource.type,
       hours: normalizeHours({
         hours: resource.hours,
         type: resource.type,

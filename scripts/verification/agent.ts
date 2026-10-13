@@ -50,7 +50,7 @@ export interface AgentResult {
   model: string;
 }
 
-const SYSTEM_PROMPT = `You verify listings for Food in the DFW, a free public map that helps Dallas–Fort Worth residents find free food: food pantries, community fridges, soup kitchens, hot meals, youth suppers (CACFP), senior meals, and grocery distributions.
+const SYSTEM_PROMPT = `You verify listings for Food in the DFW, a free public map that helps Dallas–Fort Worth residents find free food: food pantries, free meals (soup kitchens and community meals), kids' free meals (after-school CACFP suppers), senior meals, food distributions (drive-thrus, mobile markets, grocery-style sites), and community fridges.
 
 For the listing you're given, determine from public information whether it is still operating at the listed address, and whether its hours, phone, or appointment requirement have changed. People rely on this map when they are hungry, so an accurate "can't confirm" is far better than a confident guess: sending someone to a closed pantry is the failure we most want to avoid.
 

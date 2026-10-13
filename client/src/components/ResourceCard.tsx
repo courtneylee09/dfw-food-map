@@ -4,6 +4,7 @@ import { MapPin, Clock, Info } from 'lucide-react';
 import { FoodResource } from '@shared/schema';
 import { getDisplayHours } from '@shared/hours';
 import { formatDistanceMiles } from '@shared/distance';
+import { getCategoryColor } from '@/lib/categoryColors';
 
 interface ResourceCardProps {
   resource: FoodResource;
@@ -11,41 +12,9 @@ interface ResourceCardProps {
   searchedZip?: string | null;
 }
 
-type ResourceType = 'Food Pantry' | 'Community Fridge' | 'Soup Kitchen' | 'Hot Meal' | 'Youth Supper (CACFP)' | 'Senior Meals' | 'Grocery Distribution';
-
-const resourceColors: Record<ResourceType, { bg: string; border: string }> = {
-  'Food Pantry': {
-    bg: '#C47A4D',
-    border: '#8B5837',
-  },
-  'Community Fridge': {
-    bg: '#6BAF7D',
-    border: '#4A8A5C',
-  },
-  'Soup Kitchen': {
-    bg: '#D07A82',
-    border: '#A65661',
-  },
-  'Hot Meal': {
-    bg: '#D8A44C',
-    border: '#A87F36',
-  },
-  'Youth Supper (CACFP)': {
-    bg: '#9E8BC2',
-    border: '#7366A0',
-  },
-  'Senior Meals': {
-    bg: '#6F8FAF',
-    border: '#506B8A',
-  },
-  'Grocery Distribution': {
-    bg: '#8E9F56',
-    border: '#6A763F',
-  },
-};
-
 export default function ResourceCard({ resource, onClick, searchedZip }: ResourceCardProps) {
-  const colors = resourceColors[resource.type as ResourceType] || resourceColors['Food Pantry'];
+  const category = getCategoryColor(resource.type);
+  const colors = { bg: category.fill, border: category.dark, text: category.onFill };
   const displayHours = getDisplayHours(resource);
 
   return (
@@ -66,7 +35,7 @@ export default function ResourceCard({ resource, onClick, searchedZip }: Resourc
                 className="text-xs uppercase font-medium"
                 style={{
                   backgroundColor: colors.bg,
-                  color: '#000000',
+                  color: colors.text,
                   borderColor: colors.border,
                   borderWidth: '2px',
                 }}

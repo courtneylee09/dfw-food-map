@@ -15,7 +15,7 @@ function fallbackHours(type?: string | null, phone?: string | null, appointmentR
     return "Open daily, often 24 hours; check on-site signage.";
   }
 
-  if (type === "Youth Supper (CACFP)") {
+  if (type === "Kids' Free Meals") {
     return "Operates on school days during after-school hours.";
   }
 
@@ -23,7 +23,7 @@ function fallbackHours(type?: string | null, phone?: string | null, appointmentR
     return `Weekday daytime meal service; ${callHint}.`;
   }
 
-  if (type === "Grocery Distribution") {
+  if (type === "Food Distribution") {
     if (appointmentRequired) {
       return `Distribution by scheduled appointment; ${callHint}.`;
     }
@@ -77,7 +77,7 @@ export function normalizeHours(input: NormalizeHoursInput): string {
   }
 
   if (/check\s+schedule|call\s+for\s+schedule|schedule\s+varies/i.test(lower)) {
-    if (type === "Soup Kitchen" || type === "Hot Meal") {
+    if (type === "Free Meals") {
       return `Daily meal service; ${formatCallHint(phone)}.`;
     }
     return `Hours vary by day; ${formatCallHint(phone)}.`;

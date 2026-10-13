@@ -4,8 +4,17 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { CheckCircle, XCircle, MapPin, Clock, AlertTriangle, Lock } from 'lucide-react';
-import { FoodResource } from '@shared/schema';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { CheckCircle, XCircle, MapPin, Clock, AlertTriangle, Lock, EyeOff, ExternalLink } from 'lucide-react';
+import type { FieldConfirmation, FoodResource, VerificationCheck } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 
 const PASSWORD_KEY = 'adminPassword';
@@ -29,6 +38,67 @@ function savePassword(value: string) {
 
 class UnauthorizedError extends Error {}
 
+interface ReviewItem {
+  check: VerificationCheck;
+  resource: FoodResource;
+  confirmations: FieldConfirmation[];
+}
+
+interface Evidence {
+  url: string;
+  source_type: string;
+  finding: string;
+  quote?: string | null;
+  observed_date: string | null;
+}
+
+interface Conflict {
+  field: string;
+  confirmedValue: string | null;
+  confirmedAt: string;
+  source: string;
+  proposed: unknown;
+}
+
+type ConfirmedVia = 'evidence' | 'admin_call' | 'site_visit' | 'org_contact';
+
+const STATUS_LABELS: Record<string, { label: string; tone: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  active: { label: 'Still active', tone: 'default' },
+  active_with_changes: { label: 'Active — details changed', tone: 'secondary' },
+  temporarily_closed: { label: 'Temporarily closed', tone: 'destructive' },
+  likely_closed: { label: 'Likely closed', tone: 'destructive' },
+  not_food_program: { label: 'Not a food program', tone: 'destructive' },
+  unverifiable: { label: "Couldn't confirm — needs a call", tone: 'outline' },
+};
+
+const FIELD_LABELS: Record<string, string> = {
+  hours: 'Hours',
+  phone: 'Phone',
+  address: 'Address',
+  website: 'Website',
+  appointment_required: 'Appointment required',
+  notes: 'Note for visitors',
+  status: 'Status',
+};
+
+const CONFIRMED_VIA_LABELS: Record<ConfirmedVia, string> = {
+  evidence: 'Reviewed the evidence',
+  admin_call: 'I called them',
+  site_visit: 'I visited',
+  org_contact: 'The organization told us',
+};
+
+function currentValue(resource: FoodResource, field: string): unknown {
+  if (field === 'appointment_required') return resource.appointmentRequired ?? false;
+  return (resource as unknown as Record<string, unknown>)[field] ?? null;
+}
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined || value === '') return '(none)';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
+
 export default function VerificationReview() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -48,7 +118,27 @@ export default function VerificationReview() {
     return response;
   };
 
-  const { data: flaggedResources, isLoading } = useQuery<FoodResource[]>({
+  const queueQuery = useQuery<ReviewItem[]>({
+    queryKey: ['admin-checks', 'pending', password],
+    enabled: !!password,
+    queryFn: async () => {
+      const response = await adminFetch('/api/admin/checks');
+      if (!response.ok) throw new Error('Failed to fetch review queue');
+      return response.json();
+    },
+  });
+
+  const autoQuery = useQuery<ReviewItem[]>({
+    queryKey: ['admin-checks', 'auto', password],
+    enabled: !!password,
+    queryFn: async () => {
+      const response = await adminFetch('/api/admin/checks?view=auto');
+      if (!response.ok) throw new Error('Failed to fetch auto-verified list');
+      return response.json();
+    },
+  });
+
+  const flaggedQuery = useQuery<FoodResource[]>({
     queryKey: ['flagged-resources', password],
     enabled: !!password,
     queryFn: async () => {
@@ -58,7 +148,42 @@ export default function VerificationReview() {
     },
   });
 
-  const verifyMutation = useMutation({
+  const resolveMutation = useMutation({
+    mutationFn: async (input: {
+      checkId: string;
+      action: 'verify' | 'apply' | 'hide' | 'dismiss';
+      changes?: Record<string, unknown>;
+      confirmedVia: ConfirmedVia;
+      note?: string;
+    }) => {
+      const { checkId, ...body } = input;
+      const response = await adminFetch(`/api/admin/checks/${checkId}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Failed to save');
+      return input.action;
+    },
+    onSuccess: (action) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-checks'] });
+      queryClient.invalidateQueries({ queryKey: ['flagged-resources'] });
+      const messages = {
+        verify: 'Marked as verified.',
+        apply: 'Changes applied and marked as verified.',
+        hide: 'Hidden from the map.',
+        dismiss: 'Dismissed.',
+      };
+      toast({ title: 'Saved', description: messages[action] });
+    },
+    onError: (error: Error) => {
+      if (error instanceof UnauthorizedError) return;
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const verifyFlaggedMutation = useMutation({
     mutationFn: async (resourceId: string) => {
       const response = await adminFetch(`/api/resources/${resourceId}/verify`, {
         method: 'POST',
@@ -66,45 +191,13 @@ export default function VerificationReview() {
         body: JSON.stringify({ source: 'manual_review' }),
       });
       if (!response.ok) throw new Error('Failed to verify resource');
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['flagged-resources'] });
-      toast({
-        title: "Resource verified",
-        description: "This location has been marked as verified and active.",
-      });
+      toast({ title: 'Resource verified', description: 'This location has been marked as verified and active.' });
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to verify resource. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: async (resourceId: string) => {
-      const response = await adminFetch(`/api/resources/${resourceId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to remove resource');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['flagged-resources'] });
-      toast({
-        title: "Resource removed",
-        description: "This location has been removed from the map.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to remove resource. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to verify resource. Please try again.', variant: 'destructive' });
     },
   });
 
@@ -145,121 +238,308 @@ export default function VerificationReview() {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Location Verification Review</h1>
-        <p>Loading flagged locations...</p>
-      </div>
-    );
-  }
+  const queue = queueQuery.data ?? [];
+  const checkedIds = new Set(queue.map((item) => item.resource.id));
+  // Visitor reports the agent hasn't picked up yet
+  const uncheckedReports = (flaggedQuery.data ?? []).filter((r) => !checkedIds.has(r.id));
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Location Verification Review</h1>
         <p className="text-muted-foreground">
-          Review locations that have been reported as closed or need verification.
+          The verification agent checks listings against public sources. Anything it can't confirm with confidence lands here for you to decide.
         </p>
       </div>
 
-      {!flaggedResources || flaggedResources.length === 0 ? (
-        <Card className="p-8 text-center">
-          <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
-          <h2 className="text-xl font-semibold mb-2">All Clear!</h2>
-          <p className="text-muted-foreground">
-            No locations currently flagged for review.
+      <Tabs defaultValue="queue">
+        <TabsList className="mb-4 flex-wrap h-auto">
+          <TabsTrigger value="queue">Needs review ({queue.length})</TabsTrigger>
+          <TabsTrigger value="reports">Visitor reports ({uncheckedReports.length})</TabsTrigger>
+          <TabsTrigger value="auto">Recently auto-verified ({autoQuery.data?.length ?? 0})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="queue" className="space-y-4">
+          {queueQuery.isLoading ? (
+            <p>Loading...</p>
+          ) : queue.length === 0 ? (
+            <AllClear text="Nothing waiting for review." />
+          ) : (
+            queue.map((item) => (
+              <ReviewCard
+                key={item.check.id}
+                item={item}
+                busy={resolveMutation.isPending}
+                onResolve={(input) => resolveMutation.mutate({ checkId: item.check.id, ...input })}
+              />
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Visitors reported these as closed. The agent checks reports within a day; you can also confirm one yourself.
           </p>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {flaggedResources.map((resource) => (
-            <Card key={resource.id} className="p-6">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-xl font-bold">{resource.name}</h2>
-                    <Badge variant="destructive" className="ml-2">
-                      <AlertTriangle className="w-3 h-3 mr-1" />
-                      Reported Closed
-                    </Badge>
-                  </div>
-                  <Badge variant="secondary" className="mb-3">
-                    {resource.type}
+          {uncheckedReports.length === 0 ? (
+            <AllClear text="No unchecked visitor reports." />
+          ) : (
+            uncheckedReports.map((resource) => (
+              <Card key={resource.id} className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <h2 className="text-lg font-bold">{resource.name}</h2>
+                  <Badge variant="destructive">
+                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    {resource.reportedClosedCount || 1} report(s)
                   </Badge>
                 </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 mt-1 text-muted-foreground" />
-                  <span className="text-sm">{resource.address}</span>
-                </div>
+                <p className="text-sm flex items-start gap-2 mb-1">
+                  <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" /> {resource.address}
+                </p>
                 {resource.hours && (
-                  <div className="flex items-start gap-2">
-                    <Clock className="w-4 h-4 mt-1 text-muted-foreground" />
-                    <span className="text-sm">{resource.hours}</span>
-                  </div>
+                  <p className="text-sm flex items-start gap-2 mb-4">
+                    <Clock className="w-4 h-4 mt-0.5 text-muted-foreground" /> {resource.hours}
+                  </p>
                 )}
-              </div>
-
-              <div className="bg-muted/50 p-4 rounded-lg mb-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Reports</p>
-                    <p className="font-semibold">{resource.reportedClosedCount || 0} report(s)</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Last Verified</p>
-                    <p className="font-semibold">
-                      {resource.lastVerifiedDate
-                        ? new Date(resource.lastVerifiedDate).toLocaleDateString()
-                        : 'Never'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Reported At</p>
-                    <p className="font-semibold">
-                      {resource.reportedClosedAt
-                        ? new Date(resource.reportedClosedAt).toLocaleDateString()
-                        : 'Unknown'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Verification Source</p>
-                    <p className="font-semibold">{resource.verificationSource || 'initial'}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
                 <Button
-                  onClick={() => verifyMutation.mutate(resource.id)}
-                  disabled={verifyMutation.isPending}
-                  className="flex-1"
-                  variant="default"
+                  onClick={() => verifyFlaggedMutation.mutate(resource.id)}
+                  disabled={verifyFlaggedMutation.isPending}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Still Active - Mark Verified
+                  I confirmed it's still active
                 </Button>
-                <Button
-                  onClick={() => {
-                    if (confirm(`Are you sure you want to remove "${resource.name}"? This action cannot be undone.`)) {
-                      removeMutation.mutate(resource.id);
-                    }
-                  }}
-                  disabled={removeMutation.isPending}
-                  className="flex-1"
-                  variant="destructive"
-                >
-                  <XCircle className="w-4 h-4 mr-2" />
-                  Confirmed Closed - Remove
-                </Button>
-              </div>
-            </Card>
+              </Card>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="auto" className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            The agent verified these on its own (high confidence, no changes, recent evidence). Spot-check a few now and then.
+          </p>
+          {(autoQuery.data ?? []).length === 0 ? (
+            <AllClear text="Nothing auto-verified yet." />
+          ) : (
+            (autoQuery.data ?? []).map(({ check, resource }) => (
+              <Card key={check.id} className="p-4">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <h2 className="font-bold">{resource.name}</h2>
+                  <span className="text-xs text-muted-foreground">
+                    {check.checkedAt ? new Date(check.checkedAt).toLocaleDateString() : ''}
+                  </span>
+                </div>
+                <p className="text-sm mb-2">{check.summary}</p>
+                <EvidenceList evidence={(check.evidence as Evidence[] | null) ?? []} />
+              </Card>
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function AllClear({ text }: { text: string }) {
+  return (
+    <Card className="p-8 text-center">
+      <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
+      <h2 className="text-xl font-semibold mb-2">All clear</h2>
+      <p className="text-muted-foreground">{text}</p>
+    </Card>
+  );
+}
+
+function EvidenceList({ evidence }: { evidence: Evidence[] }) {
+  if (evidence.length === 0) return null;
+  return (
+    <ul className="space-y-2 text-sm">
+      {evidence.map((e, i) => (
+        <li key={i} className="border-l-2 pl-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              {e.source_type.replace(/_/g, ' ')}
+            </Badge>
+            {e.observed_date && <span className="text-xs text-muted-foreground">dated {e.observed_date}</span>}
+            <a
+              href={e.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs underline inline-flex items-center gap-1 break-all"
+            >
+              source <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+          <p className="mt-1">{e.finding}</p>
+          {e.quote && <blockquote className="mt-1 italic text-muted-foreground">“{e.quote}”</blockquote>}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ReviewCard({
+  item,
+  busy,
+  onResolve,
+}: {
+  item: ReviewItem;
+  busy: boolean;
+  onResolve: (input: {
+    action: 'verify' | 'apply' | 'hide' | 'dismiss';
+    changes?: Record<string, unknown>;
+    confirmedVia: ConfirmedVia;
+    note?: string;
+  }) => void;
+}) {
+  const { check, resource } = item;
+  const proposed = (check.proposedChanges as Record<string, unknown> | null) ?? {};
+  const conflicts = (check.conflicts as Conflict[] | null) ?? [];
+  const evidence = (check.evidence as Evidence[] | null) ?? [];
+  const status = STATUS_LABELS[check.status ?? ''] ?? { label: check.status ?? 'Error', tone: 'outline' as const };
+
+  const [selected, setSelected] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(Object.keys(proposed).map((field) => [field, true])),
+  );
+  const [edited, setEdited] = useState<Record<string, unknown>>(proposed);
+  const [confirmedVia, setConfirmedVia] = useState<ConfirmedVia>('evidence');
+  const [note, setNote] = useState('');
+
+  const selectedChanges = Object.fromEntries(
+    Object.entries(edited).filter(([field]) => selected[field]),
+  );
+  const hasChanges = Object.keys(selectedChanges).length > 0;
+
+  return (
+    <Card className="p-5">
+      <div className="flex flex-wrap items-center gap-2 mb-1">
+        <h2 className="text-xl font-bold">{resource.name}</h2>
+        <Badge variant={status.tone}>{status.label}</Badge>
+        {check.confidence && <Badge variant="outline">confidence: {check.confidence}</Badge>}
+        {resource.reportedClosed && (
+          <Badge variant="destructive">
+            <AlertTriangle className="w-3 h-3 mr-1" />
+            reported closed
+          </Badge>
+        )}
+      </div>
+      <p className="text-sm text-muted-foreground mb-3">
+        {resource.type} · {resource.address} · checked {check.checkedAt ? new Date(check.checkedAt).toLocaleDateString() : ''}
+      </p>
+
+      <p className="mb-4">{check.summary ?? check.error}</p>
+
+      {conflicts.length > 0 && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
+          <p className="font-semibold mb-1">Conflicts with your manual entry</p>
+          {conflicts.map((c, i) => (
+            <p key={i}>
+              {FIELD_LABELS[c.field] ?? c.field}: you confirmed <strong>{formatValue(c.confirmedValue)}</strong> on{' '}
+              {new Date(c.confirmedAt).toLocaleDateString()} ({CONFIRMED_VIA_LABELS[c.source as ConfirmedVia] ?? c.source}); the agent found{' '}
+              <strong>{formatValue(c.proposed)}</strong>.
+            </p>
           ))}
         </div>
       )}
-    </div>
+
+      {Object.keys(proposed).length > 0 && (
+        <div className="mb-4">
+          <p className="font-semibold mb-2">Proposed changes</p>
+          <div className="space-y-3">
+            {Object.keys(proposed).map((field) => (
+              <div key={field} className="grid grid-cols-[auto_1fr] gap-3 items-start">
+                <Checkbox
+                  checked={!!selected[field]}
+                  onCheckedChange={(checked) => setSelected((s) => ({ ...s, [field]: !!checked }))}
+                  aria-label={`Apply ${FIELD_LABELS[field] ?? field}`}
+                  className="mt-1"
+                />
+                <div className="text-sm space-y-1">
+                  <p className="font-medium">{FIELD_LABELS[field] ?? field}</p>
+                  <p className="text-muted-foreground line-through">{formatValue(currentValue(resource, field))}</p>
+                  {field === 'appointment_required' ? (
+                    <p>{formatValue(edited[field])}</p>
+                  ) : (
+                    <Input
+                      value={String(edited[field] ?? '')}
+                      onChange={(e) => setEdited((v) => ({ ...v, [field]: e.target.value }))}
+                      disabled={!selected[field]}
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <details className="mb-4">
+        <summary className="cursor-pointer font-semibold">Evidence ({evidence.length})</summary>
+        <div className="mt-3">
+          <EvidenceList evidence={evidence} />
+        </div>
+      </details>
+
+      <div className="grid gap-3 sm:grid-cols-2 mb-4">
+        <div>
+          <p className="text-sm font-medium mb-1">How did you confirm?</p>
+          <Select value={confirmedVia} onValueChange={(v) => setConfirmedVia(v as ConfirmedVia)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(CONFIRMED_VIA_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {confirmedVia !== 'evidence' && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Saved as a primary source: the agent won't override it for 6 months.
+            </p>
+          )}
+        </div>
+        <div>
+          <p className="text-sm font-medium mb-1">Note (optional)</p>
+          <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Spoke with Pastor J., 10/14" />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {hasChanges && (
+          <Button
+            disabled={busy}
+            onClick={() => onResolve({ action: 'apply', changes: selectedChanges, confirmedVia, note })}
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Apply selected changes
+          </Button>
+        )}
+        <Button
+          variant={hasChanges ? 'outline' : 'default'}
+          disabled={busy}
+          onClick={() => onResolve({ action: 'verify', confirmedVia, note })}
+        >
+          <CheckCircle className="w-4 h-4 mr-2" />
+          Still active — no changes
+        </Button>
+        <Button
+          variant="destructive"
+          disabled={busy}
+          onClick={() => {
+            if (confirm(`Hide "${resource.name}" from the map? You can restore it later from the database.`)) {
+              onResolve({ action: 'hide', confirmedVia, note });
+            }
+          }}
+        >
+          <EyeOff className="w-4 h-4 mr-2" />
+          Hide from map
+        </Button>
+        <Button variant="ghost" disabled={busy} onClick={() => onResolve({ action: 'dismiss', confirmedVia, note })}>
+          <XCircle className="w-4 h-4 mr-2" />
+          Dismiss
+        </Button>
+      </div>
+    </Card>
   );
 }

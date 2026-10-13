@@ -13,7 +13,7 @@ export interface Selected {
 const DAY = 24 * 60 * 60 * 1000;
 const WEEK = 7 * DAY;
 const MANUAL_SKIP_DAYS = 60;
-const VOLATILE_TYPES = new Set(["Grocery Distribution", "Hot Meal", "Community Fridge"]);
+const VOLATILE_TYPES = new Set(["Food Distribution", "Free Meals", "Community Fridge"]);
 const MANUAL_SOURCES = new Set(["manual", "manual_review", "admin_review"]);
 
 function isRecentlyManualVerified(listing: FoodResource, now: Date): boolean {
@@ -44,9 +44,9 @@ export function riskScore(listing: FoodResource, lastCheck: VerificationCheck | 
 
   if (VOLATILE_TYPES.has(listing.type)) score += 5;
 
-  // CACFP suppers follow the school calendar
+  // Kids' meals (CACFP) follow the school calendar
   const month = now.getMonth() + 1;
-  if (listing.type === "Youth Supper (CACFP)" && [1, 5, 6, 8, 12].includes(month)) score += 5;
+  if (listing.type === "Kids' Free Meals" && [1, 5, 6, 8, 12].includes(month)) score += 5;
 
   return score;
 }

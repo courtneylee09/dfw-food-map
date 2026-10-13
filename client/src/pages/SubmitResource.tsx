@@ -1,3 +1,4 @@
+import { CATEGORIES } from '@shared/categories';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
@@ -136,13 +137,9 @@ export default function SubmitResource() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Food Pantry">Food Pantry</SelectItem>
-                        <SelectItem value="Community Fridge">Community Fridge</SelectItem>
-                        <SelectItem value="Soup Kitchen">Soup Kitchen</SelectItem>
-                        <SelectItem value="Hot Meal">Hot Meal</SelectItem>
-                        <SelectItem value="Youth Supper">Youth Supper</SelectItem>
-                        <SelectItem value="Senior Meals">Senior Meals</SelectItem>
-                        <SelectItem value="Grocery Distribution">Grocery Distribution</SelectItem>
+                        {CATEGORIES.map((category) => (
+                          <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

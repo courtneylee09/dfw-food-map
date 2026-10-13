@@ -1,3 +1,4 @@
+import { CATEGORIES } from '@shared/categories';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,9 +102,9 @@ export default function SubmissionForm({ onBack, onSubmit }: SubmissionFormProps
                 <SelectValue placeholder="Select a type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Food Pantry">Food Pantry</SelectItem>
-                <SelectItem value="Community Fridge">Community Fridge</SelectItem>
-                <SelectItem value="Hot Meal">Hot Meal</SelectItem>
+                {CATEGORIES.map((category) => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

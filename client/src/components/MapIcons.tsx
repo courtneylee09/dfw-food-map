@@ -1,76 +1,60 @@
-import { UtensilsCrossed, Refrigerator, Store, Soup, Users, User, ShoppingCart } from 'lucide-react';
+import { Backpack, Carrot, HeartHandshake, Refrigerator, ShoppingBasket, Soup } from 'lucide-react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import type { Category } from '@shared/categories';
+import { getCategoryColor } from '@/lib/categoryColors';
 
-export type ResourceType = 'Food Pantry' | 'Community Fridge' | 'Soup Kitchen' | 'Hot Meal' | 'Youth Supper (CACFP)' | 'Senior Meals' | 'Grocery Distribution';
+export type ResourceType = Category;
 
-const iconConfig: Record<ResourceType, { Icon: React.ElementType; color: string; bgColor: string }> = {
-  'Food Pantry': {
-    Icon: Store,
-    color: '#8B5837',
-    bgColor: '#C47A4D',
-  },
-  'Community Fridge': {
-    Icon: Refrigerator,
-    color: '#4A8A5C',
-    bgColor: '#6BAF7D',
-  },
-  'Soup Kitchen': {
-    Icon: Soup,
-    color: '#A65661',
-    bgColor: '#D07A82',
-  },
-  'Hot Meal': {
-    Icon: UtensilsCrossed,
-    color: '#A87F36',
-    bgColor: '#D8A44C',
-  },
-  'Youth Supper': {
-    Icon: Users,
-    color: '#7366A0',
-    bgColor: '#9E8BC2',
-  },
-  'Senior Meals': {
-    Icon: User,
-    color: '#506B8A',
-    bgColor: '#6F8FAF',
-  },
-  'Grocery Distribution': {
-    Icon: ShoppingCart,
-    color: '#6A763F',
-    bgColor: '#8E9F56',
-  },
+export const categoryIcons: Record<Category, React.ElementType> = {
+  'Food Pantry': ShoppingBasket,
+  'Free Meals': Soup,
+  "Kids' Free Meals": Backpack,
+  'Senior Meals': HeartHandshake,
+  'Food Distribution': Carrot,
+  'Community Fridge': Refrigerator,
 };
 
-// Create icon for Google Maps using SVG data URL
+// Marker images are identical per category, so build each one once
+const iconCache = new Map<string, google.maps.Icon>();
+
+// App-icon tile marker: rounded colored square with a white icon and a pointer
 export function createGoogleMapIcon(type: ResourceType, isSelected: boolean = false): google.maps.Icon {
-  const config = iconConfig[type] || iconConfig['Food Pantry'];
-  
-  const scale = isSelected ? 1.15 : 1;
-  const size = 40 * scale;
-  const height = 50 * scale;
-  
-  // Create SVG with icon embedded
+  const cacheKey = `${type}|${isSelected}`;
+  const cached = iconCache.get(cacheKey);
+  if (cached) return cached;
+
+  const colors = getCategoryColor(type);
+  const Icon = categoryIcons[type] || ShoppingBasket;
+  const iconSvg = renderToStaticMarkup(<Icon size={20} color="#ffffff" strokeWidth={2.25} />)
+    .replace('<svg ', '<svg x="12" y="10" ');
+
+  const scale = isSelected ? 1.2 : 1;
+  const width = 44 * scale;
+  const height = 54 * scale;
+
   const svgString = `
-    <svg width="${size}" height="${height}" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M20 0C11.716 0 5 6.716 5 15c0 8.284 15 35 15 35s15-26.716 15-35c0-8.284-6.716-15-15-15z"
-        fill="${config.bgColor}"
-        stroke="${config.color}"
-        stroke-width="2"
-      />
-      <circle cx="20" cy="15" r="8" fill="white" />
+    <svg width="${width}" height="${height}" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.3" />
+        </filter>
+      </defs>
+      <g filter="url(#s)">
+        <path d="M15 39 L29 39 L22 50 Z" fill="${colors.dark}" />
+        <rect x="4" y="2" width="36" height="38" rx="11" fill="${colors.fill}" stroke="${colors.dark}" stroke-width="2" />
+      </g>
+      ${iconSvg}
     </svg>
   `;
 
-  // Convert SVG to data URL
   const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(svgBlob);
-
-  return {
-    url: url,
-    scaledSize: new google.maps.Size(size, height),
-    anchor: new google.maps.Point(size / 2, height),
+  const icon: google.maps.Icon = {
+    url: URL.createObjectURL(svgBlob),
+    scaledSize: new google.maps.Size(width, height),
+    anchor: new google.maps.Point(width / 2, height - 4 * scale),
   };
+  iconCache.set(cacheKey, icon);
+  return icon;
 }
 
 // Legacy function for Leaflet (kept for compatibility, but not used with Google Maps)

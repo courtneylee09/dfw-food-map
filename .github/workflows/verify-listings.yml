@@ -1,0 +1,59 @@
+name: Verify listings
+
+on:
+  # Schedules are turned on after the initial sweep (until then every listing counts as "new")
+  # schedule:
+  #   - cron: "0 11 * * 1" # Monday 6am CT: weekly batch by change-risk
+  #   - cron: "0 11 * * 0,2-6" # Other days 6am CT: visitor reports and new listings
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "sweep = every listing once, weekly = top 25 by change-risk, daily = reports and new listings"
+        type: choice
+        options: [weekly, daily, sweep]
+        default: weekly
+      dry_run:
+        description: "Research only; don't change the database"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-listings
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run verification agent
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          VERIFY_AUTO_APPROVE: "true"
+          MODE: ${{ inputs.mode || (github.event.schedule == '0 11 * * 1' && 'weekly' || 'daily') }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: npx tsx scripts/verify-listings.ts --mode=$MODE $DRY_RUN
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report-${{ github.run_id }}
+          path: verification-runs/
+          if-no-files-found: ignore
+          retention-days: 90

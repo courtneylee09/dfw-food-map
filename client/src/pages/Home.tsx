@@ -254,7 +254,7 @@ export default function Home() {
       <div className="flex-none border-t px-3 py-2 bg-white text-[#002145]">
         {activeFilter === 'All' ? (
           <p className="text-xs leading-relaxed" data-testid="text-acronym-legend">
-            Legend: ZIP = ZIP code · CACFP = Child and Adult Care Food Program · Tap a category below to see what it offers
+            Tap a category below to see what it offers and who it's for.
           </p>
         ) : (
           <div className="text-sm leading-snug space-y-1" data-testid="text-category-description">
