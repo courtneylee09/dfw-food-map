@@ -759,11 +759,22 @@ interface ActivityRow {
   actorName: string;
   action: string;
   resourceName: string | null;
-  details: { changes?: Record<string, { before: unknown; after: unknown }>; confirmedVia?: string; note?: string | null; username?: string; displayName?: string } | null;
+  details: {
+    changes?: Record<string, { before: unknown; after: unknown }>;
+    confirmedVia?: string;
+    note?: string | null;
+    username?: string;
+    displayName?: string;
+    ip?: string | null;
+    device?: string;
+    reason?: string;
+  } | null;
 }
 
 const ACTION_LABELS: Record<string, string> = {
   sign_in: 'Signed in',
+  sign_in_failed: 'Failed sign-in',
+  sign_in_locked: 'Failed sign-in — locked out for 15 minutes',
   review_apply: 'Applied changes',
   review_verify: 'Marked still active',
   review_hide: 'Hid from map',
@@ -831,6 +842,11 @@ function ActivityPanel({ adminFetch }: { adminFetch: AdminFetch }) {
                   {r.resourceName && <span className="font-medium">· {r.resourceName}</span>}
                   {r.details?.username && <span className="font-medium">· {r.details.username}</span>}
                 </div>
+                {(r.details?.device || r.details?.ip || r.details?.reason) && (
+                  <p className={`mt-1 ${r.action.startsWith('sign_in_') ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {[r.details?.reason, r.details?.device, r.details?.ip ? `IP ${r.details.ip}` : null].filter(Boolean).join(' · ')}
+                  </p>
+                )}
                 {changes.length > 0 && (
                   <ul className="mt-1 text-muted-foreground">
                     {changes.map(([field, c]) => (

@@ -76,14 +76,51 @@ function checkLockout(key: string) {
   }
 }
 
-function recordFailure(key: string) {
+// Returns true when this failure triggers a lockout
+function recordFailure(key: string): boolean {
   const entry = failures.get(key) ?? { count: 0, until: 0 };
   entry.count += 1;
+  let locked = false;
   if (entry.count >= MAX_FAILURES) {
     entry.until = Date.now() + LOCKOUT_MS;
     entry.count = 0;
+    locked = true;
   }
   failures.set(key, entry);
+  return locked;
+}
+
+// --- where a sign-in came from ---------------------------------------------------
+
+function describeDevice(userAgent: string): string {
+  if (!userAgent) return "Unknown device";
+  const browser =
+    /Edg\//.test(userAgent) ? "Edge" :
+    /OPR\/|Opera/.test(userAgent) ? "Opera" :
+    /Chrome\//.test(userAgent) ? "Chrome" :
+    /Firefox\//.test(userAgent) ? "Firefox" :
+    /Safari\//.test(userAgent) ? "Safari" :
+    /curl|python|node|axios|wget/i.test(userAgent) ? "Script" : "Browser";
+  const os =
+    /iPhone|iPad|iPod/.test(userAgent) ? "iPhone/iPad" :
+    /Android/.test(userAgent) ? "Android" :
+    /Windows/.test(userAgent) ? "Windows" :
+    /Mac OS X|Macintosh/.test(userAgent) ? "Mac" :
+    /CrOS/.test(userAgent) ? "Chromebook" :
+    /Linux/.test(userAgent) ? "Linux" : "unknown system";
+  return `${browser} on ${os}`;
+}
+
+function requestOrigin(req: Request) {
+  return { ip: req.ip ?? null, device: describeDevice(req.get("user-agent") ?? "") };
+}
+
+// Failed sign-ins are logged with what was tried (never the password)
+async function logFailedSignIn(req: Request, role: Role, name: string, reason: string, locked: boolean) {
+  const actor: Actor = { role, verifierId: null, name };
+  await logActivity(actor, locked ? "sign_in_locked" : "sign_in_failed", {
+    details: { ...requestOrigin(req), reason },
+  });
 }
 
 // --- sessions -----------------------------------------------------------------
@@ -114,13 +151,14 @@ export async function login(
     const key = lockoutKey(req, "admin");
     checkLockout(key);
     if (!adminPasswordMatches(password)) {
-      recordFailure(key);
+      const locked = recordFailure(key);
+      await logFailedSignIn(req, "admin", "Admin", "wrong password", locked);
       throw new AuthError("That password isn't right.", 401);
     }
     failures.delete(key);
     const actor: Actor = { role: "admin", verifierId: null, name: "Admin" };
     const token = await createSession("admin", null);
-    await logActivity(actor, "sign_in");
+    await logActivity(actor, "sign_in", { details: requestOrigin(req) });
     return { token, actor };
   }
 
@@ -132,14 +170,17 @@ export async function login(
     const [verifier]: Verifier[] = await db.select().from(verifiers).where(eq(verifiers.username, username)).limit(1);
     // Same message whether the username or the password is wrong
     if (!verifier || !verifier.active || !(await verifyPassword(password, verifier.passwordHash))) {
-      recordFailure(key);
+      const locked = recordFailure(key);
+      const reason = !verifier ? "unknown username" : !verifier.active ? "deactivated account" : "wrong password";
+      const name = verifier ? verifier.displayName : `Unknown user "${username.slice(0, 40)}"`;
+      await logFailedSignIn(req, "verifier", name, reason, locked);
       throw new AuthError("That username and password don't match an active verifier.", 401);
     }
     failures.delete(key);
     await db.update(verifiers).set({ lastLoginAt: new Date() }).where(eq(verifiers.id, verifier.id));
     const actor: Actor = { role: "verifier", verifierId: verifier.id, name: verifier.displayName };
     const token = await createSession("verifier", verifier.id);
-    await logActivity(actor, "sign_in");
+    await logActivity(actor, "sign_in", { details: requestOrigin(req) });
     return { token, actor };
   }
 
