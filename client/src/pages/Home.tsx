@@ -19,7 +19,6 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [view, setView] = useState<View>('map');
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
-  const [showCategoryTips, setShowCategoryTips] = useState(false);
   const [selectedResource, setSelectedResource] = useState<FoodResource | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number]>([32.7767, -96.7970]);
   const [showAddToHome, setShowAddToHome] = useState(false);
@@ -266,31 +265,17 @@ export default function Home() {
               <span className="font-semibold">Who it's for:</span>{' '}
               {categoryDescriptions[activeFilter].whoItsFor}
             </p>
-            {showCategoryTips ? (
-              <p>
-                <span className="font-semibold">Good to know:</span>{' '}
-                {categoryDescriptions[activeFilter].goodToKnow}
-              </p>
-            ) : (
-              <button
-                type="button"
-                className="text-sm font-semibold underline underline-offset-2"
-                onClick={() => setShowCategoryTips(true)}
-                data-testid="button-category-tips"
-              >
-                Good to know ▾
-              </button>
-            )}
+            <p>
+              <span className="font-semibold">Good to know:</span>{' '}
+              {categoryDescriptions[activeFilter].goodToKnow}
+            </p>
           </div>
         )}
       </div>
       <div className="flex-none border-t p-2">
         <FilterPills
           activeFilter={activeFilter}
-          onFilterChange={(filter) => {
-            setActiveFilter(filter);
-            setShowCategoryTips(false);
-          }}
+          onFilterChange={setActiveFilter}
         />
       </div>
       <AddToHomeModal
