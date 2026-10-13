@@ -4,6 +4,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+// Behind Azure's front end: use the visitor's IP from X-Forwarded-For (sign-in lockouts are per IP)
+app.set("trust proxy", 1);
 
 declare module 'http' {
   interface IncomingMessage {

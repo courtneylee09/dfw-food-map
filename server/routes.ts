@@ -1,24 +1,10 @@
-import type { Express, Request, Response, NextFunction } from "express";
+import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { createHash, timingSafeEqual } from "crypto";
+import { AuthError, createVerifier, getActivity, listVerifiers, login, logActivity, logout, requireRole, updateVerifier } from "./auth";
 import { storage } from "./storage";
 import { normalizeHours } from "@shared/hours";
 import { LEGACY_CATEGORY_NAMES } from "@shared/categories";
 import { getAutomaticChanges, getReviewQueue, getUnconfirmed, resolveCheck, ResolveError, undoCheck } from "./verification";
-
-// Admin-only routes require the X-Admin-Password header to match ADMIN_PASSWORD
-function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) {
-    return res.status(503).json({ message: "Admin access is not configured" });
-  }
-  const provided = req.get("x-admin-password") || "";
-  const hash = (value: string) => createHash("sha256").update(value).digest();
-  if (!timingSafeEqual(hash(provided), hash(expected))) {
-    return res.status(401).json({ message: "Invalid admin password" });
-  }
-  next();
-}
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3959; // Earth's radius in miles
@@ -93,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // otherwise Express treats "flagged" and "needs-verification" as an id
 
   // Get resources that need verification
-  app.get("/api/resources/needs-verification", requireAdmin, async (req, res) => {
+  app.get("/api/resources/needs-verification", requireRole("admin", "verifier"), async (req, res) => {
     try {
       const daysOld = req.query.days ? parseInt(req.query.days as string) : 60;
       const resources = await storage.getResourcesNeedingVerification(daysOld);
@@ -105,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get flagged resources (reported as closed)
-  app.get("/api/resources/flagged", requireAdmin, async (req, res) => {
+  app.get("/api/resources/flagged", requireRole("admin", "verifier"), async (req, res) => {
     try {
       const resources = await storage.getFlaggedResources();
       res.json(resources);
@@ -133,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.post("/api/resources", requireAdmin, async (req, res) => {
+  app.post("/api/resources", requireRole("admin"), async (req, res) => {
     try {
       const resource = await storage.createFoodResource(req.body);
       res.status(201).json(resource);
@@ -161,7 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all submissions (for admin review)
-  app.get("/api/submissions", requireAdmin, async (req, res) => {
+  app.get("/api/submissions", requireRole("admin"), async (req, res) => {
     try {
       const allSubmissions = await storage.getSubmissions();
       res.json(allSubmissions);
@@ -202,8 +188,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sign-in for the review page
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { token, actor } = await login(req, req.body ?? {});
+      res.json({ token, role: actor.role, name: actor.name });
+    } catch (error) {
+      if (error instanceof AuthError) return res.status(error.status).json({ message: error.message });
+      console.error("Error signing in:", error);
+      res.status(500).json({ message: "Sign-in failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      await logout(req);
+      res.json({ message: "Signed out" });
+    } catch (error) {
+      console.error("Error signing out:", error);
+      res.status(500).json({ message: "Sign-out failed" });
+    }
+  });
+
+  app.get("/api/auth/me", requireRole("admin", "verifier"), (req, res) => {
+    res.json({ role: req.actor!.role, name: req.actor!.name });
+  });
+
+  // Verifier accounts and the activity log (admin only)
+  app.get("/api/admin/verifiers", requireRole("admin"), async (_req, res) => {
+    res.json(await listVerifiers());
+  });
+
+  app.post("/api/admin/verifiers", requireRole("admin"), async (req, res) => {
+    try {
+      res.status(201).json(await createVerifier(req.actor!, req.body ?? {}));
+    } catch (error) {
+      if (error instanceof AuthError) return res.status(error.status).json({ message: error.message });
+      console.error("Error creating verifier:", error);
+      res.status(500).json({ message: "Failed to create verifier" });
+    }
+  });
+
+  app.patch("/api/admin/verifiers/:id", requireRole("admin"), async (req, res) => {
+    try {
+      res.json(await updateVerifier(req.actor!, req.params.id, req.body ?? {}));
+    } catch (error) {
+      if (error instanceof AuthError) return res.status(error.status).json({ message: error.message });
+      console.error("Error updating verifier:", error);
+      res.status(500).json({ message: "Failed to update verifier" });
+    }
+  });
+
+  app.get("/api/admin/activity", requireRole("admin"), async (_req, res) => {
+    res.json(await getActivity());
+  });
+
   // Verification agent review queue
-  app.get("/api/admin/checks", requireAdmin, async (req, res) => {
+  app.get("/api/admin/checks", requireRole("admin", "verifier"), async (req, res) => {
     try {
       const view = req.query.view;
       if (view === "auto") return res.json(await getAutomaticChanges());
@@ -215,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/checks/:id/resolve", requireAdmin, async (req, res) => {
+  app.post("/api/admin/checks/:id/resolve", requireRole("admin", "verifier"), async (req, res) => {
     try {
       const { action, changes, confirmedVia, note } = req.body ?? {};
       if (!["verify", "apply", "hide", "dismiss"].includes(action)) {
@@ -224,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (confirmedVia && !["evidence", "admin_call", "site_visit", "org_contact"].includes(confirmedVia)) {
         return res.status(400).json({ message: "Invalid confirmation source" });
       }
-      await resolveCheck(req.params.id, { action, changes, confirmedVia, note });
+      await resolveCheck(req.params.id, { action, changes, confirmedVia, note }, req.actor!);
       res.json({ message: "Resolved" });
     } catch (error) {
       if (error instanceof ResolveError) {
@@ -235,9 +276,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/checks/:id/undo", requireAdmin, async (req, res) => {
+  app.post("/api/admin/checks/:id/undo", requireRole("admin", "verifier"), async (req, res) => {
     try {
-      await undoCheck(req.params.id, req.body?.note);
+      await undoCheck(req.params.id, req.actor!, req.body?.note);
       res.json({ message: "Undone" });
     } catch (error) {
       if (error instanceof ResolveError) {
@@ -249,10 +290,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mark a resource as verified
-  app.post("/api/resources/:id/verify", requireAdmin, async (req, res) => {
+  app.post("/api/resources/:id/verify", requireRole("admin", "verifier"), async (req, res) => {
     try {
-      const { source } = req.body;
-      await storage.markResourceAsVerified(req.params.id, source || 'manual');
+      const resource = await storage.getFoodResource(req.params.id);
+      if (!resource) return res.status(404).json({ message: "Resource not found" });
+      await storage.markResourceAsVerified(req.params.id, "manual");
+      await logActivity(req.actor!, "report_cleared", {
+        resourceId: resource.id,
+        resourceName: resource.name,
+        details: { reportedClosedCount: resource.reportedClosedCount },
+      });
       res.json({ message: "Resource marked as verified" });
     } catch (error) {
       console.error("Error verifying resource:", error);
@@ -261,9 +308,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove a resource (if confirmed closed)
-  app.delete("/api/resources/:id", requireAdmin, async (req, res) => {
+  app.delete("/api/resources/:id", requireRole("admin"), async (req, res) => {
     try {
+      const resource = await storage.getFoodResource(req.params.id);
+      if (!resource) return res.status(404).json({ message: "Resource not found" });
       await storage.removeResource(req.params.id);
+      await logActivity(req.actor!, "listing_deleted", {
+        resourceId: resource.id,
+        resourceName: resource.name,
+        details: { address: resource.address, type: resource.type },
+      });
       res.json({ message: "Resource removed successfully" });
     } catch (error) {
       console.error("Error removing resource:", error);

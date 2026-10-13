@@ -71,6 +71,43 @@ export const fieldConfirmations = pgTable("field_confirmations", {
   confirmedAt: timestamp("confirmed_at").defaultNow(),
 });
 
+// Volunteer verifiers who sign in with a username and password
+export const verifiers = pgTable("verifiers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: varchar("username", { length: 40 }).notNull().unique(),
+  displayName: text("display_name").notNull(),
+  // scrypt$<salt>$<hash>
+  passwordHash: text("password_hash").notNull(),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastLoginAt: timestamp("last_login_at"),
+});
+
+// Signed-in sessions for the review page (admin or verifier); only a hash of the token is stored
+export const authSessions = pgTable("auth_sessions", {
+  tokenHash: varchar("token_hash", { length: 64 }).primaryKey(),
+  role: varchar("role", { length: 10 }).notNull(),
+  verifierId: varchar("verifier_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+// Who did what on the review page
+export const activityLog = pgTable("activity_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  at: timestamp("at").defaultNow(),
+  role: varchar("role", { length: 10 }).notNull(),
+  verifierId: varchar("verifier_id"),
+  actorName: text("actor_name").notNull(),
+  action: varchar("action", { length: 40 }).notNull(),
+  resourceId: varchar("resource_id"),
+  resourceName: text("resource_name"),
+  checkId: varchar("check_id"),
+  details: jsonb("details"),
+});
+
+export type Verifier = typeof verifiers.$inferSelect;
+export type ActivityEntry = typeof activityLog.$inferSelect;
 export type VerificationCheck = typeof verificationChecks.$inferSelect;
 export type FieldConfirmation = typeof fieldConfirmations.$inferSelect;
 

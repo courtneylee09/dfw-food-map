@@ -8,6 +8,7 @@ import {
   type FoodResource,
   type VerificationCheck,
 } from "@shared/schema";
+import { logActivity, type Actor } from "./auth";
 
 // Admin review of verification agent results (docs/VERIFICATION_AGENT.md → Admin page).
 
@@ -84,7 +85,7 @@ const COLUMN_FOR_APPLIED: Record<string, keyof FoodResource> = {
 
 // Restore the "before" values of an automatic change. Undone fields are logged as
 // admin decisions so the agent raises a conflict instead of re-applying them.
-export async function undoCheck(checkId: string, note?: string): Promise<void> {
+export async function undoCheck(checkId: string, actor: Actor, note?: string): Promise<void> {
   const [check]: VerificationCheck[] = await db
     .select()
     .from(verificationChecks)
@@ -110,14 +111,22 @@ export async function undoCheck(checkId: string, note?: string): Promise<void> {
         field: field === "hidden" ? "status" : field,
         value: field === "hidden" ? (change.before ? "closed" : "active") : change.before === null ? null : String(change.before),
         source: "admin_undo",
-        note: note?.trim() || "Undid an automatic change",
+        note: `${actor.name}: ${note?.trim() || "undid an automatic change"}`,
         confirmedAt: now,
       });
     }
     await tx
       .update(verificationChecks)
-      .set({ resolution: "reverted", resolvedAt: now, resolutionNote: note?.trim() || "Undone by admin" })
+      .set({ resolution: "reverted", resolvedAt: now, resolutionNote: `Undone by ${actor.name}${note?.trim() ? `: ${note.trim()}` : ""}` })
       .where(eq(verificationChecks.id, checkId));
+  });
+
+  const [resource]: FoodResource[] = await db.select().from(foodResources).where(eq(foodResources.id, check.resourceId)).limit(1);
+  await logActivity(actor, "undo_automatic_change", {
+    resourceId: check.resourceId,
+    resourceName: resource?.name ?? null,
+    checkId,
+    details: { restored: applied, note: note?.trim() || null },
   });
 }
 
@@ -164,6 +173,7 @@ export async function resolveCheck(
     confirmedVia?: ConfirmedVia;
     note?: string;
   },
+  actor: Actor,
 ): Promise<void> {
   const [check]: VerificationCheck[] = await db
     .select()
@@ -176,6 +186,9 @@ export async function resolveCheck(
   const confirmedVia: ConfirmedVia = input.confirmedVia ?? "evidence";
   const isPrimary = PRIMARY_SOURCES.includes(confirmedVia);
   const now = new Date();
+
+  const [resource]: FoodResource[] = await db.select().from(foodResources).where(eq(foodResources.id, check.resourceId)).limit(1);
+  if (!resource) throw new ResolveError("Listing not found", 404);
 
   const resourceUpdates: Partial<FoodResource> = {};
   const confirmedFields: Array<{ field: string; value: string | null }> = [];
@@ -232,7 +245,7 @@ export async function resolveCheck(
           field,
           value,
           source: confirmedVia,
-          note: input.note?.trim() || null,
+          note: [actor.name, input.note?.trim()].filter(Boolean).join(": "),
           confirmedAt: now,
         });
       }
@@ -242,8 +255,22 @@ export async function resolveCheck(
       .set({
         resolution,
         resolvedAt: now,
-        resolutionNote: [`confirmed via ${confirmedVia}`, input.note?.trim()].filter(Boolean).join(" — "),
+        resolutionNote: [`${actor.name}, confirmed via ${confirmedVia}`, input.note?.trim()].filter(Boolean).join(" — "),
       })
       .where(and(eq(verificationChecks.id, checkId), inArray(verificationChecks.resolution, ["pending", "unconfirmed"])));
+  });
+
+  // The log keeps before and after values of every field this action changed
+  const changes: Record<string, { before: unknown; after: unknown }> = {};
+  for (const [column, after] of Object.entries(resourceUpdates)) {
+    if (["lastVerifiedDate", "verificationSource", "reportedClosedCount", "reportedClosedAt"].includes(column)) continue;
+    const before = (resource as Record<string, unknown>)[column] ?? null;
+    if (String(before) !== String(after)) changes[column] = { before, after };
+  }
+  await logActivity(actor, `review_${input.action}`, {
+    resourceId: resource.id,
+    resourceName: resource.name,
+    checkId,
+    details: { confirmedVia, note: input.note?.trim() || null, changes },
   });
 }

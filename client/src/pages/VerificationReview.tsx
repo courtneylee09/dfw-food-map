@@ -17,26 +17,35 @@ import { CheckCircle, XCircle, MapPin, Clock, AlertTriangle, Lock, EyeOff, Exter
 import type { FieldConfirmation, FoodResource, VerificationCheck } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 
-const PASSWORD_KEY = 'adminPassword';
+const SESSION_KEY = 'reviewSession';
 
-function loadPassword(): string {
+interface Session {
+  token: string;
+  role: 'admin' | 'verifier';
+  name: string;
+}
+
+function loadSession(): Session | null {
   try {
-    return sessionStorage.getItem(PASSWORD_KEY) || '';
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as Session) : null;
   } catch {
-    return '';
+    return null;
   }
 }
 
-function savePassword(value: string) {
+function saveSession(session: Session | null) {
   try {
-    if (value) sessionStorage.setItem(PASSWORD_KEY, value);
-    else sessionStorage.removeItem(PASSWORD_KEY);
+    if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    else sessionStorage.removeItem(SESSION_KEY);
   } catch {
-    // Storage unavailable; password lasts only for this page view
+    // Storage unavailable; the sign-in lasts only for this page view
   }
 }
 
 class UnauthorizedError extends Error {}
+
+type AdminFetch = (url: string, init?: RequestInit) => Promise<Response>;
 
 interface ReviewItem {
   check: VerificationCheck;
@@ -102,25 +111,38 @@ function formatValue(value: unknown): string {
 export default function VerificationReview() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [password, setPassword] = useState(loadPassword);
-  const [passwordInput, setPasswordInput] = useState('');
+  const [session, setSession] = useState<Session | null>(loadSession);
 
-  const adminFetch = async (url: string, init: RequestInit = {}) => {
+  const signIn = (next: Session) => {
+    saveSession(next);
+    setSession(next);
+  };
+
+  const signOut = async () => {
+    if (session) {
+      await fetch('/api/auth/logout', { method: 'POST', headers: { 'X-Session-Token': session.token } }).catch(() => {});
+    }
+    saveSession(null);
+    setSession(null);
+    queryClient.removeQueries({ queryKey: ['admin-checks'] });
+  };
+
+  const adminFetch: AdminFetch = async (url, init = {}) => {
     const response = await fetch(url, {
       ...init,
-      headers: { ...init.headers, 'X-Admin-Password': password },
+      headers: { ...init.headers, 'X-Session-Token': session?.token ?? '' },
     });
     if (response.status === 401) {
-      savePassword('');
-      setPassword('');
-      throw new UnauthorizedError('Invalid admin password');
+      saveSession(null);
+      setSession(null);
+      throw new UnauthorizedError('Please sign in again');
     }
     return response;
   };
 
   const queueQuery = useQuery<ReviewItem[]>({
-    queryKey: ['admin-checks', 'pending', password],
-    enabled: !!password,
+    queryKey: ['admin-checks', 'pending', session?.token],
+    enabled: !!session,
     queryFn: async () => {
       const response = await adminFetch('/api/admin/checks');
       if (!response.ok) throw new Error('Failed to fetch review queue');
@@ -129,8 +151,8 @@ export default function VerificationReview() {
   });
 
   const autoQuery = useQuery<ReviewItem[]>({
-    queryKey: ['admin-checks', 'auto', password],
-    enabled: !!password,
+    queryKey: ['admin-checks', 'auto', session?.token],
+    enabled: !!session,
     queryFn: async () => {
       const response = await adminFetch('/api/admin/checks?view=auto');
       if (!response.ok) throw new Error('Failed to fetch automatic changes');
@@ -139,8 +161,8 @@ export default function VerificationReview() {
   });
 
   const unconfirmedQuery = useQuery<ReviewItem[]>({
-    queryKey: ['admin-checks', 'unconfirmed', password],
-    enabled: !!password,
+    queryKey: ['admin-checks', 'unconfirmed', session?.token],
+    enabled: !!session,
     queryFn: async () => {
       const response = await adminFetch('/api/admin/checks?view=unconfirmed');
       if (!response.ok) throw new Error('Failed to fetch call list');
@@ -169,8 +191,8 @@ export default function VerificationReview() {
   });
 
   const flaggedQuery = useQuery<FoodResource[]>({
-    queryKey: ['flagged-resources', password],
-    enabled: !!password,
+    queryKey: ['flagged-resources', session?.token],
+    enabled: !!session,
     queryFn: async () => {
       const response = await adminFetch('/api/resources/flagged');
       if (!response.ok) throw new Error('Failed to fetch flagged resources');
@@ -231,42 +253,16 @@ export default function VerificationReview() {
     },
   });
 
-  if (!password) {
+  if (!session) {
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">Location Verification Review</h1>
-        <Card className="p-6 max-w-md">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const value = passwordInput.trim();
-              if (!value) return;
-              savePassword(value);
-              setPassword(value);
-              setPasswordInput('');
-            }}
-            className="space-y-4"
-          >
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-muted-foreground" />
-              <p className="font-semibold">Admin password required</p>
-            </div>
-            <Input
-              type="password"
-              autoComplete="current-password"
-              placeholder="Admin password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              autoFocus
-            />
-            <Button type="submit" className="w-full">
-              Continue
-            </Button>
-          </form>
-        </Card>
+        <LoginPanel onSignedIn={signIn} />
       </div>
     );
   }
+
+  const isAdmin = session.role === 'admin';
 
   const queue = queueQuery.data ?? [];
   const checkedIds = new Set(queue.map((item) => item.resource.id));
@@ -276,9 +272,19 @@ export default function VerificationReview() {
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Location Verification Review</h1>
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h1 className="text-3xl font-bold">Location Verification Review</h1>
+          <div className="flex items-center gap-3 text-sm">
+            <span data-testid="text-signed-in">
+              Signed in as <strong>{session.name}</strong> ({isAdmin ? 'admin' : 'verifier'})
+            </span>
+            <Button variant="outline" size="sm" onClick={signOut}>
+              Sign out
+            </Button>
+          </div>
+        </div>
         <p className="text-muted-foreground">
-          The verification agent checks listings against public sources. Anything it can't confirm with confidence lands here for you to decide.
+          The verification agent checks listings against public sources. Anything it can't confirm with confidence lands here for you to decide. Everything you do here is recorded under your name.
         </p>
       </div>
 
@@ -288,7 +294,20 @@ export default function VerificationReview() {
           <TabsTrigger value="reports">Visitor reports ({uncheckedReports.length})</TabsTrigger>
           <TabsTrigger value="unconfirmed">Call list ({unconfirmedQuery.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="auto">Automatic changes ({autoQuery.data?.length ?? 0})</TabsTrigger>
+          {isAdmin && <TabsTrigger value="volunteers">Volunteers</TabsTrigger>}
+          {isAdmin && <TabsTrigger value="activity">Activity</TabsTrigger>}
         </TabsList>
+
+        {isAdmin && (
+          <TabsContent value="volunteers">
+            <VolunteersPanel adminFetch={adminFetch} />
+          </TabsContent>
+        )}
+        {isAdmin && (
+          <TabsContent value="activity">
+            <ActivityPanel adminFetch={adminFetch} />
+          </TabsContent>
+        )}
 
         <TabsContent value="queue" className="space-y-4">
           {queueQuery.isLoading ? (
@@ -445,6 +464,395 @@ function AutoChangeCard({
         </Button>
       )}
     </Card>
+  );
+}
+
+function LoginPanel({ onSignedIn }: { onSignedIn: (session: Session) => void }) {
+  const [role, setRole] = useState<'admin' | 'verifier' | null>(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role, username: role === 'verifier' ? username : undefined, password }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setError(data.message || 'Sign-in failed. Try again.');
+        return;
+      }
+      onSignedIn({ token: data.token, role: data.role, name: data.name });
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
+    } finally {
+      setBusy(false);
+      setPassword('');
+    }
+  };
+
+  if (!role) {
+    return (
+      <Card className="p-6 max-w-md space-y-4">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          <p className="font-semibold">How are you signing in?</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Button variant="outline" className="h-auto py-4 flex-col" onClick={() => setRole('admin')} data-testid="button-login-admin">
+            <span className="font-semibold">Admin</span>
+            <span className="text-xs text-muted-foreground">Password only</span>
+          </Button>
+          <Button variant="outline" className="h-auto py-4 flex-col" onClick={() => setRole('verifier')} data-testid="button-login-verifier">
+            <span className="font-semibold">Verifier</span>
+            <span className="text-xs text-muted-foreground">Username and password</span>
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="p-6 max-w-md">
+      <form onSubmit={submit} className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          <p className="font-semibold">{role === 'admin' ? 'Admin sign-in' : 'Verifier sign-in'}</p>
+        </div>
+        {role === 'verifier' && (
+          <div>
+            <label htmlFor="login-username" className="text-sm font-medium">Username</label>
+            <Input
+              id="login-username"
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoFocus
+            />
+          </div>
+        )}
+        <div>
+          <label htmlFor="login-password" className="text-sm font-medium">Password</label>
+          <Input
+            id="login-password"
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoFocus={role === 'admin'}
+          />
+        </div>
+        {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
+        <div className="flex gap-2">
+          <Button type="button" variant="ghost" onClick={() => { setRole(null); setError(''); }}>
+            Back
+          </Button>
+          <Button type="submit" className="flex-1" disabled={busy || !password || (role === 'verifier' && !username)}>
+            {busy ? 'Signing in…' : 'Sign in'}
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+}
+
+interface VolunteerAccount {
+  id: string;
+  username: string;
+  displayName: string;
+  active: boolean;
+  createdAt: string | null;
+  lastLoginAt: string | null;
+}
+
+function generatePassword(): string {
+  const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const bytes = new Uint8Array(14);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => chars[b % chars.length]).join('');
+}
+
+function VolunteersPanel({ adminFetch }: { adminFetch: AdminFetch }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState(generatePassword);
+  const [resetFor, setResetFor] = useState<string | null>(null);
+  const [resetPassword, setResetPassword] = useState('');
+
+  const volunteersQuery = useQuery<VolunteerAccount[]>({
+    queryKey: ['admin-checks', 'verifiers'],
+    queryFn: async () => {
+      const response = await adminFetch('/api/admin/verifiers');
+      if (!response.ok) throw new Error('Failed to load volunteers');
+      return response.json();
+    },
+  });
+
+  const save = useMutation({
+    mutationFn: async (input: { method: 'POST' | 'PATCH'; url: string; body: unknown; done: string }) => {
+      const response = await adminFetch(input.url, {
+        method: input.method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input.body),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Failed to save');
+      return input.done;
+    },
+    onSuccess: (done) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-checks', 'verifiers'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-checks', 'activity'] });
+      toast({ title: 'Saved', description: done });
+    },
+    onError: (error: Error) => {
+      if (error instanceof UnauthorizedError) return;
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-5">
+        <h2 className="font-bold text-lg mb-1">Add a verifier</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Share the username and password with the volunteer privately, for example by text, never in a public post.
+        </p>
+        <form
+          className="grid gap-3 sm:grid-cols-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save.mutate(
+              {
+                method: 'POST',
+                url: '/api/admin/verifiers',
+                body: { displayName, username, password },
+                done: `${displayName} can now sign in as "${username.trim().toLowerCase()}".`,
+              },
+              {
+                onSuccess: () => {
+                  setDisplayName('');
+                  setUsername('');
+                  setPassword(generatePassword());
+                },
+              },
+            );
+          }}
+        >
+          <div>
+            <label htmlFor="new-name" className="text-sm font-medium">Name</label>
+            <Input id="new-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Jordan R." />
+          </div>
+          <div>
+            <label htmlFor="new-username" className="text-sm font-medium">Username</label>
+            <Input id="new-username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jordan.r" autoComplete="off" />
+          </div>
+          <div>
+            <label htmlFor="new-password" className="text-sm font-medium">Temporary password</label>
+            <div className="flex gap-2">
+              <Input id="new-password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
+              <Button type="button" variant="outline" onClick={() => setPassword(generatePassword())}>
+                New
+              </Button>
+            </div>
+          </div>
+          <div className="sm:col-span-3">
+            <Button type="submit" disabled={save.isPending || !displayName.trim() || !username.trim() || password.length < 10}>
+              Add verifier
+            </Button>
+          </div>
+        </form>
+      </Card>
+
+      {(volunteersQuery.data ?? []).length === 0 ? (
+        <p className="text-sm text-muted-foreground">No verifiers yet.</p>
+      ) : (
+        (volunteersQuery.data ?? []).map((v) => (
+          <Card key={v.id} className="p-4">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <h3 className="font-bold">{v.displayName}</h3>
+              <span className="text-sm text-muted-foreground">{v.username}</span>
+              <Badge variant={v.active ? 'default' : 'outline'}>{v.active ? 'Active' : 'Deactivated'}</Badge>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Last signed in: {v.lastLoginAt ? new Date(v.lastLoginAt).toLocaleString() : 'never'}
+            </p>
+            <div className="flex flex-wrap gap-2 items-center">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={save.isPending}
+                onClick={() =>
+                  save.mutate({
+                    method: 'PATCH',
+                    url: `/api/admin/verifiers/${v.id}`,
+                    body: { active: !v.active },
+                    done: v.active ? `${v.displayName} is deactivated and signed out.` : `${v.displayName} can sign in again.`,
+                  })
+                }
+              >
+                {v.active ? 'Deactivate' : 'Reactivate'}
+              </Button>
+              {resetFor === v.id ? (
+                <>
+                  <Input
+                    aria-label={`New password for ${v.displayName}`}
+                    className="max-w-[220px]"
+                    value={resetPassword}
+                    onChange={(e) => setResetPassword(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={save.isPending || resetPassword.length < 10}
+                    onClick={() =>
+                      save.mutate(
+                        {
+                          method: 'PATCH',
+                          url: `/api/admin/verifiers/${v.id}`,
+                          body: { password: resetPassword },
+                          done: `${v.displayName}'s password is reset. Share the new one privately.`,
+                        },
+                        { onSuccess: () => setResetFor(null) },
+                      )
+                    }
+                  >
+                    Save password
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setResetFor(null)}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setResetFor(v.id);
+                    setResetPassword(generatePassword());
+                  }}
+                >
+                  Reset password
+                </Button>
+              )}
+            </div>
+          </Card>
+        ))
+      )}
+    </div>
+  );
+}
+
+interface ActivityRow {
+  id: string;
+  at: string;
+  role: string;
+  verifierId: string | null;
+  actorName: string;
+  action: string;
+  resourceName: string | null;
+  details: { changes?: Record<string, { before: unknown; after: unknown }>; confirmedVia?: string; note?: string | null; username?: string; displayName?: string } | null;
+}
+
+const ACTION_LABELS: Record<string, string> = {
+  sign_in: 'Signed in',
+  review_apply: 'Applied changes',
+  review_verify: 'Marked still active',
+  review_hide: 'Hid from map',
+  review_dismiss: 'Dismissed',
+  undo_automatic_change: 'Undid an automatic change',
+  report_cleared: 'Cleared a visitor report',
+  listing_deleted: 'Deleted a listing',
+  verifier_created: 'Added a verifier',
+  verifier_updated: 'Updated a verifier',
+};
+
+function ActivityPanel({ adminFetch }: { adminFetch: AdminFetch }) {
+  const [who, setWho] = useState('everyone');
+  const [hideSignIns, setHideSignIns] = useState(true);
+
+  const activityQuery = useQuery<ActivityRow[]>({
+    queryKey: ['admin-checks', 'activity'],
+    queryFn: async () => {
+      const response = await adminFetch('/api/admin/activity');
+      if (!response.ok) throw new Error('Failed to load activity');
+      return response.json();
+    },
+  });
+
+  const rows = activityQuery.data ?? [];
+  const people = Array.from(new Set(rows.map((r) => r.actorName))).sort();
+  const shown = rows.filter((r) => (who === 'everyone' || r.actorName === who) && !(hideSignIns && r.action === 'sign_in'));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="w-56">
+          <Select value={who} onValueChange={setWho}>
+            <SelectTrigger aria-label="Filter by person">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="everyone">Everyone</SelectItem>
+              {people.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {p}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <Checkbox checked={hideSignIns} onCheckedChange={(c) => setHideSignIns(!!c)} />
+          Hide sign-ins
+        </label>
+      </div>
+
+      {shown.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No activity yet.</p>
+      ) : (
+        <Card className="divide-y">
+          {shown.map((r) => {
+            const changes = Object.entries(r.details?.changes ?? {});
+            return (
+              <div key={r.id} className="p-3 text-sm">
+                <div className="flex flex-wrap gap-x-2">
+                  <span className="text-muted-foreground tabular-nums">{new Date(r.at).toLocaleString()}</span>
+                  <span className="font-semibold">{r.actorName}</span>
+                  <span>{ACTION_LABELS[r.action] ?? r.action}</span>
+                  {r.resourceName && <span className="font-medium">· {r.resourceName}</span>}
+                  {r.details?.username && <span className="font-medium">· {r.details.username}</span>}
+                </div>
+                {changes.length > 0 && (
+                  <ul className="mt-1 text-muted-foreground">
+                    {changes.map(([field, c]) => (
+                      <li key={field}>
+                        {FIELD_LABELS[field] ?? field}: <span className="line-through">{formatValue(c.before)}</span> → {formatValue(c.after)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {(r.details?.confirmedVia || r.details?.note) && (
+                  <p className="mt-1 text-muted-foreground">
+                    {r.details?.confirmedVia && CONFIRMED_VIA_LABELS[r.details.confirmedVia as ConfirmedVia]}
+                    {r.details?.confirmedVia && r.details?.note ? ' — ' : ''}
+                    {r.details?.note}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </Card>
+      )}
+    </div>
   );
 }
 

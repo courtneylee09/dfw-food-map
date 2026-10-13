@@ -47,3 +47,37 @@ CREATE INDEX IF NOT EXISTS field_confirmations_resource_idx ON field_confirmatio
 
 -- Two-key auto-approval: what the agent changed, with before/after values for undo
 ALTER TABLE verification_checks ADD COLUMN IF NOT EXISTS applied_changes jsonb;
+
+-- Verifier accounts, sign-in sessions and the activity log
+CREATE TABLE IF NOT EXISTS verifiers (
+  id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+  username varchar(40) NOT NULL UNIQUE,
+  display_name text NOT NULL,
+  password_hash text NOT NULL,
+  active boolean NOT NULL DEFAULT true,
+  created_at timestamp DEFAULT now(),
+  last_login_at timestamp
+);
+
+CREATE TABLE IF NOT EXISTS auth_sessions (
+  token_hash varchar(64) PRIMARY KEY,
+  role varchar(10) NOT NULL,
+  verifier_id varchar,
+  created_at timestamp DEFAULT now(),
+  expires_at timestamp NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS activity_log (
+  id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+  at timestamp DEFAULT now(),
+  role varchar(10) NOT NULL,
+  verifier_id varchar,
+  actor_name text NOT NULL,
+  action varchar(40) NOT NULL,
+  resource_id varchar,
+  resource_name text,
+  check_id varchar,
+  details jsonb
+);
+CREATE INDEX IF NOT EXISTS activity_log_at_idx ON activity_log (at DESC);
+CREATE INDEX IF NOT EXISTS activity_log_verifier_idx ON activity_log (verifier_id);
