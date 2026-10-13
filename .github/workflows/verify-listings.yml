@@ -1,10 +1,9 @@
 name: Verify listings
 
 on:
-  # Schedules are turned on after the initial sweep (until then every listing counts as "new")
-  # schedule:
-  #   - cron: "0 11 * * 1" # Monday 6am CT: weekly batch by change-risk
-  #   - cron: "0 11 * * 0,2-6" # Other days 6am CT: visitor reports and new listings
+  schedule:
+    - cron: "0 11 * * 1" # Monday 6am CT: weekly batch by change-risk
+    - cron: "0 11 * * 0,2-6" # Other days 6am CT: visitor reports and new listings
   workflow_dispatch:
     inputs:
       mode:
