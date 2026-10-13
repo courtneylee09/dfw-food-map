@@ -25,6 +25,9 @@ const defaultOptions = {
   streetViewControl: false,
   mapTypeControl: false,
   fullscreenControl: true,
+  // Hide Google's restaurant and shop icons so they aren't mistaken for food resources
+  clickableIcons: false,
+  styles: [{ featureType: 'poi.business', stylers: [{ visibility: 'off' }] }],
 };
 
 function escapeHtml(unsafe: string) {
