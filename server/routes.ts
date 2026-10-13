@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { createHash, timingSafeEqual } from "crypto";
 import { storage } from "./storage";
 import { normalizeHours } from "@shared/hours";
+import { getRecentAutoVerified, getReviewQueue, resolveCheck, ResolveError } from "./verification";
 
 // Admin-only routes require the X-Admin-Password header to match ADMIN_PASSWORD
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
@@ -195,6 +196,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating report:", error);
       res.status(500).json({ message: "Failed to submit report" });
+    }
+  });
+
+  // Verification agent review queue
+  app.get("/api/admin/checks", requireAdmin, async (req, res) => {
+    try {
+      const view = req.query.view === "auto" ? "auto" : "pending";
+      res.json(view === "auto" ? await getRecentAutoVerified() : await getReviewQueue());
+    } catch (error) {
+      console.error("Error fetching verification checks:", error);
+      res.status(500).json({ message: "Failed to fetch verification checks" });
+    }
+  });
+
+  app.post("/api/admin/checks/:id/resolve", requireAdmin, async (req, res) => {
+    try {
+      const { action, changes, confirmedVia, note } = req.body ?? {};
+      if (!["verify", "apply", "hide", "dismiss"].includes(action)) {
+        return res.status(400).json({ message: "Invalid action" });
+      }
+      if (confirmedVia && !["evidence", "admin_call", "site_visit", "org_contact"].includes(confirmedVia)) {
+        return res.status(400).json({ message: "Invalid confirmation source" });
+      }
+      await resolveCheck(req.params.id, { action, changes, confirmedVia, note });
+      res.json({ message: "Resolved" });
+    } catch (error) {
+      if (error instanceof ResolveError) {
+        return res.status(error.status).json({ message: error.message });
+      }
+      console.error("Error resolving verification check:", error);
+      res.status(500).json({ message: "Failed to resolve check" });
     }
   });
 

@@ -6,6 +6,7 @@ import { useLocation } from 'wouter';
 import ResourceMap from '@/components/ResourceMap';
 import GoogleMapWrapper from '@/components/GoogleMapWrapper';
 import FilterPills, { FilterType } from '@/components/FilterPills';
+import { categoryDescriptions } from '@/lib/categoryDescriptions';
 import ResourceList from '@/components/ResourceList';
 import ResourceDetail from '@/components/ResourceDetail';
 import AddToHomeModal from '@/components/AddToHomeModal';
@@ -18,6 +19,7 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [view, setView] = useState<View>('map');
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
+  const [showCategoryTips, setShowCategoryTips] = useState(false);
   const [selectedResource, setSelectedResource] = useState<FoodResource | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number]>([32.7767, -96.7970]);
   const [showAddToHome, setShowAddToHome] = useState(false);
@@ -250,14 +252,45 @@ export default function Home() {
         </div>
       )}
       <div className="flex-none border-t px-3 py-2 bg-white text-[#002145]">
-        <p className="text-xs leading-relaxed" data-testid="text-acronym-legend">
-          Legend: ZIP = ZIP code · CACFP = Child and Adult Care Food Program
-        </p>
+        {activeFilter === 'All' ? (
+          <p className="text-xs leading-relaxed" data-testid="text-acronym-legend">
+            Legend: ZIP = ZIP code · CACFP = Child and Adult Care Food Program · Tap a category below to see what it offers
+          </p>
+        ) : (
+          <div className="text-sm leading-snug space-y-1" data-testid="text-category-description">
+            <p>
+              <span className="font-semibold">{activeFilter}:</span>{' '}
+              {categoryDescriptions[activeFilter].whatYouGet}
+            </p>
+            <p>
+              <span className="font-semibold">Who it's for:</span>{' '}
+              {categoryDescriptions[activeFilter].whoItsFor}
+            </p>
+            {showCategoryTips ? (
+              <p>
+                <span className="font-semibold">Good to know:</span>{' '}
+                {categoryDescriptions[activeFilter].goodToKnow}
+              </p>
+            ) : (
+              <button
+                type="button"
+                className="text-sm font-semibold underline underline-offset-2"
+                onClick={() => setShowCategoryTips(true)}
+                data-testid="button-category-tips"
+              >
+                Good to know ▾
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="flex-none border-t p-2">
         <FilterPills
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={(filter) => {
+            setActiveFilter(filter);
+            setShowCategoryTips(false);
+          }}
         />
       </div>
       <AddToHomeModal

@@ -13,6 +13,7 @@ export type VerdictStatus =
   | "active_with_changes"
   | "temporarily_closed"
   | "likely_closed"
+  | "not_food_program"
   | "unverifiable";
 
 export interface Verdict {
@@ -23,6 +24,7 @@ export interface Verdict {
     url: string;
     source_type: "google_places" | "official_site" | "food_bank_partner" | "government" | "news" | "other";
     finding: string;
+    quote: string | null;
     observed_date: string | null;
   }>;
   proposed_changes: {
@@ -31,6 +33,7 @@ export interface Verdict {
     address: string | null;
     website: string | null;
     appointment_required: boolean | null;
+    notes: string | null;
   };
 }
 
@@ -66,9 +69,15 @@ When you're done, call submit_verdict exactly once:
 - active_with_changes: operating, but hours, phone, address, website, or appointment requirement differ from the listing. Put only the differing fields in proposed_changes; leave the others null.
 - temporarily_closed: evidence of a pause, with or without a reopening date.
 - likely_closed: evidence it has closed or moved away, or the host says the program ended.
+- not_food_program: the place exists but doesn't provide free food (for example a medical clinic or thrift store listed by mistake).
 - unverifiable: not enough public evidence either way.
-Always include a website in proposed_changes if you found the program's official page and it differs from the listing's website (the listing may have none).
-Format proposed hours the same way as the listing's hours text.`;
+
+Proposed changes:
+- Every proposed hours, phone, or address change must be backed by an evidence item whose quote field contains the exact text copied from that source. Copy hours exactly as the source states them; don't merge or round different schedules.
+- If sources disagree, prefer the organization's own current page, and say in the summary that they disagree. If you can't tell which is right, don't propose the change; explain it in the summary instead.
+- Always include a website if you found the program's official page and it differs from the listing's website (the listing may have none).
+- Use notes for a short, plain-language fact a visitor needs before going, such as "Not accepting new clients until Jan 2027" or "Bridge ID from a caseworker required." Propose notes only when they differ from the listing's current notes; keep them under 140 characters.
+- Format proposed hours the same way as the listing's hours text.`;
 
 const SUBMIT_VERDICT_TOOL = {
   name: "submit_verdict",
@@ -82,7 +91,7 @@ const SUBMIT_VERDICT_TOOL = {
     properties: {
       status: {
         type: "string",
-        enum: ["active", "active_with_changes", "temporarily_closed", "likely_closed", "unverifiable"],
+        enum: ["active", "active_with_changes", "temporarily_closed", "likely_closed", "not_food_program", "unverifiable"],
       },
       confidence: { type: "string", enum: ["high", "medium", "low"] },
       summary: { type: "string", description: "1–3 sentences for the site admin explaining the verdict." },
@@ -91,7 +100,7 @@ const SUBMIT_VERDICT_TOOL = {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["url", "source_type", "finding", "observed_date"],
+          required: ["url", "source_type", "finding", "quote", "observed_date"],
           properties: {
             url: { type: "string" },
             source_type: {
@@ -99,6 +108,10 @@ const SUBMIT_VERDICT_TOOL = {
               enum: ["google_places", "official_site", "food_bank_partner", "government", "news", "other"],
             },
             finding: { type: "string", description: "What this source says about the listing." },
+            quote: {
+              type: ["string", "null"],
+              description: "Exact text copied from the source that supports the finding. Required for any source backing an hours, phone, or address change.",
+            },
             observed_date: {
               type: ["string", "null"],
               description: "Date shown on the source (YYYY-MM-DD), or null if none.",
@@ -109,13 +122,14 @@ const SUBMIT_VERDICT_TOOL = {
       proposed_changes: {
         type: "object",
         additionalProperties: false,
-        required: ["hours", "phone", "address", "website", "appointment_required"],
+        required: ["hours", "phone", "address", "website", "appointment_required", "notes"],
         properties: {
           hours: { type: ["string", "null"] },
           phone: { type: ["string", "null"] },
           address: { type: ["string", "null"] },
           website: { type: ["string", "null"] },
           appointment_required: { type: ["boolean", "null"] },
+          notes: { type: ["string", "null"] },
         },
       },
     },
@@ -146,6 +160,8 @@ function describeListing(listing: FoodResource, places: PlacesResult, reportDeta
     `- Phone: ${listing.phone || "(none)"}`,
     `- Hours: ${listing.hours || "(none)"}`,
     `- Appointment required: ${listing.appointmentRequired ? "yes" : "no"}`,
+    `- Website: ${listing.website || "(none)"}`,
+    `- Notes: ${listing.notes || "(none)"}`,
     `- Last verified: ${listing.lastVerifiedDate ? new Date(listing.lastVerifiedDate).toISOString().slice(0, 10) : "never"} (source: ${listing.verificationSource || "unknown"})`,
   ];
 

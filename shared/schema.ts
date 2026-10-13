@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, timestamp, jsonb, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -24,7 +24,52 @@ export const foodResources = pgTable("food_resources", {
   // Hidden listings stay in the database but are not shown on the map
   hidden: boolean("hidden").default(false),
   hiddenReason: text("hidden_reason"),
+  website: text("website"),
+  googlePlaceId: text("google_place_id"),
+  lastAgentCheckAt: timestamp("last_agent_check_at"),
 });
+
+// One row per verification agent check (see docs/VERIFICATION_AGENT.md)
+export const verificationChecks = pgTable("verification_checks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  resourceId: varchar("resource_id").notNull(),
+  checkedAt: timestamp("checked_at").defaultNow(),
+  trigger: varchar("trigger", { length: 30 }).notNull(),
+  status: varchar("status", { length: 30 }),
+  confidence: varchar("confidence", { length: 10 }),
+  summary: text("summary"),
+  evidence: jsonb("evidence"),
+  proposedChanges: jsonb("proposed_changes"),
+  conflicts: jsonb("conflicts"),
+  placesSnapshot: jsonb("places_snapshot"),
+  error: text("error"),
+  // auto_verified | pending | approved | changes_applied | hidden | dismissed | superseded | error
+  resolution: varchar("resolution", { length: 20 }).notNull(),
+  resolvedAt: timestamp("resolved_at"),
+  resolutionNote: text("resolution_note"),
+  model: varchar("model", { length: 50 }),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  webSearches: integer("web_searches"),
+  costUsd: text("cost_usd"),
+});
+
+// Facts a human confirmed from a primary source (call, visit, the organization itself).
+// The agent never overrides these; it raises a conflict instead.
+export const fieldConfirmations = pgTable("field_confirmations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  resourceId: varchar("resource_id").notNull(),
+  // status | hours | phone | address | website | appointment_required | notes
+  field: varchar("field", { length: 30 }).notNull(),
+  value: text("value"),
+  // admin_call | site_visit | org_contact
+  source: varchar("source", { length: 20 }).notNull(),
+  note: text("note"),
+  confirmedAt: timestamp("confirmed_at").defaultNow(),
+});
+
+export type VerificationCheck = typeof verificationChecks.$inferSelect;
+export type FieldConfirmation = typeof fieldConfirmations.$inferSelect;
 
 export const submissions = pgTable("submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
