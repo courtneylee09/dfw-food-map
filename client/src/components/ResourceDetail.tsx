@@ -17,6 +17,7 @@ import {
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { getDisplayHours } from '@shared/hours';
+import VerificationBadge from '@/components/VerificationBadge';
 
 interface ResourceDetailProps {
   resource: FoodResource;
@@ -90,6 +91,9 @@ export default function ResourceDetail({ resource, onBack }: ResourceDetailProps
             <Badge variant="secondary" className="text-sm uppercase font-medium">
               {resource.type}
             </Badge>
+            <div className="mt-3">
+              <VerificationBadge lastVerifiedDate={resource.lastVerifiedDate} size="base" />
+            </div>
           </div>
 
           {resource.notes && (

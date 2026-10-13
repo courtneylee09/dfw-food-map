@@ -44,3 +44,6 @@ CREATE TABLE IF NOT EXISTS field_confirmations (
   confirmed_at timestamp DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS field_confirmations_resource_idx ON field_confirmations (resource_id);
+
+-- Two-key auto-approval: what the agent changed, with before/after values for undo
+ALTER TABLE verification_checks ADD COLUMN IF NOT EXISTS applied_changes jsonb;

@@ -85,7 +85,16 @@ export function selectListings(
     ].slice(0, options.limit);
   }
 
-  // weekly: urgent first, then highest change-risk
+  // weekly: urgent first, then temporarily closed listings due a re-check, then highest change-risk
+  const reopenChecks: Selected[] = listings
+    .filter(
+      (l) =>
+        l.hidden &&
+        /^Temporarily closed/.test(l.hiddenReason ?? "") &&
+        (!l.lastAgentCheckAt || now.getTime() - new Date(l.lastAgentCheckAt).getTime() > 30 * DAY),
+    )
+    .map((listing) => ({ listing, trigger: "scheduled" as const }));
+  urgent.push(...reopenChecks);
   const urgentIds = new Set(urgent.map((s) => s.listing.id));
   const scored = visible
     .filter((l) => !urgentIds.has(l.id) && !pendingIds.has(l.id) && !isRecentlyManualVerified(l, now))

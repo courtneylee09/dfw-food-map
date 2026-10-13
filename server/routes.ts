@@ -4,7 +4,7 @@ import { createHash, timingSafeEqual } from "crypto";
 import { storage } from "./storage";
 import { normalizeHours } from "@shared/hours";
 import { LEGACY_CATEGORY_NAMES } from "@shared/categories";
-import { getRecentAutoVerified, getReviewQueue, resolveCheck, ResolveError } from "./verification";
+import { getAutomaticChanges, getReviewQueue, getUnconfirmed, resolveCheck, ResolveError, undoCheck } from "./verification";
 
 // Admin-only routes require the X-Admin-Password header to match ADMIN_PASSWORD
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
@@ -205,8 +205,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Verification agent review queue
   app.get("/api/admin/checks", requireAdmin, async (req, res) => {
     try {
-      const view = req.query.view === "auto" ? "auto" : "pending";
-      res.json(view === "auto" ? await getRecentAutoVerified() : await getReviewQueue());
+      const view = req.query.view;
+      if (view === "auto") return res.json(await getAutomaticChanges());
+      if (view === "unconfirmed") return res.json(await getUnconfirmed());
+      res.json(await getReviewQueue());
     } catch (error) {
       console.error("Error fetching verification checks:", error);
       res.status(500).json({ message: "Failed to fetch verification checks" });
@@ -230,6 +232,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error resolving verification check:", error);
       res.status(500).json({ message: "Failed to resolve check" });
+    }
+  });
+
+  app.post("/api/admin/checks/:id/undo", requireAdmin, async (req, res) => {
+    try {
+      await undoCheck(req.params.id, req.body?.note);
+      res.json({ message: "Undone" });
+    } catch (error) {
+      if (error instanceof ResolveError) {
+        return res.status(error.status).json({ message: error.message });
+      }
+      console.error("Error undoing verification check:", error);
+      res.status(500).json({ message: "Failed to undo" });
     }
   });
 

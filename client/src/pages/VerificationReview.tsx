@@ -133,8 +133,38 @@ export default function VerificationReview() {
     enabled: !!password,
     queryFn: async () => {
       const response = await adminFetch('/api/admin/checks?view=auto');
-      if (!response.ok) throw new Error('Failed to fetch auto-verified list');
+      if (!response.ok) throw new Error('Failed to fetch automatic changes');
       return response.json();
+    },
+  });
+
+  const unconfirmedQuery = useQuery<ReviewItem[]>({
+    queryKey: ['admin-checks', 'unconfirmed', password],
+    enabled: !!password,
+    queryFn: async () => {
+      const response = await adminFetch('/api/admin/checks?view=unconfirmed');
+      if (!response.ok) throw new Error('Failed to fetch call list');
+      return response.json();
+    },
+  });
+
+  const undoMutation = useMutation({
+    mutationFn: async (checkId: string) => {
+      const response = await adminFetch(`/api/admin/checks/${checkId}/undo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || 'Failed to undo');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-checks'] });
+      toast({ title: 'Undone', description: 'The listing is back to how it was. The agent won’t re-apply this change.' });
+    },
+    onError: (error: Error) => {
+      if (error instanceof UnauthorizedError) return;
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     },
   });
 
@@ -256,7 +286,8 @@ export default function VerificationReview() {
         <TabsList className="mb-4 flex-wrap h-auto">
           <TabsTrigger value="queue">Needs review ({queue.length})</TabsTrigger>
           <TabsTrigger value="reports">Visitor reports ({uncheckedReports.length})</TabsTrigger>
-          <TabsTrigger value="auto">Recently auto-verified ({autoQuery.data?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="unconfirmed">Call list ({unconfirmedQuery.data?.length ?? 0})</TabsTrigger>
+          <TabsTrigger value="auto">Automatic changes ({autoQuery.data?.length ?? 0})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="queue" className="space-y-4">
@@ -314,27 +345,106 @@ export default function VerificationReview() {
 
         <TabsContent value="auto" className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            The agent verified these on its own (high confidence, no changes, recent evidence). Spot-check a few now and then.
+            Changes the agent made on its own. Each one passed two checks: the quoted text was found on the source page,
+            and a second, independent review agreed. Spot-check a few, and use Undo if something is wrong.
           </p>
           {(autoQuery.data ?? []).length === 0 ? (
-            <AllClear text="Nothing auto-verified yet." />
+            <AllClear text="No automatic changes yet." />
           ) : (
             (autoQuery.data ?? []).map(({ check, resource }) => (
-              <Card key={check.id} className="p-4">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <h2 className="font-bold">{resource.name}</h2>
-                  <span className="text-xs text-muted-foreground">
-                    {check.checkedAt ? new Date(check.checkedAt).toLocaleDateString() : ''}
-                  </span>
-                </div>
-                <p className="text-sm mb-2">{check.summary}</p>
-                <EvidenceList evidence={(check.evidence as Evidence[] | null) ?? []} />
-              </Card>
+              <AutoChangeCard
+                key={check.id}
+                check={check}
+                resource={resource}
+                busy={undoMutation.isPending}
+                onUndo={() => undoMutation.mutate(check.id)}
+              />
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="unconfirmed" className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            The agent couldn't confirm these from public sources. They stay on the map with a "Not recently confirmed —
+            call ahead" label. This is the call list: once you've confirmed one by phone, it moves out of here.
+          </p>
+          {(unconfirmedQuery.data ?? []).length === 0 ? (
+            <AllClear text="Nothing unconfirmed." />
+          ) : (
+            (unconfirmedQuery.data ?? []).map((item) => (
+              <ReviewCard
+                key={item.check.id}
+                item={item}
+                busy={resolveMutation.isPending}
+                onResolve={(input) => resolveMutation.mutate({ checkId: item.check.id, ...input })}
+              />
             ))
           )}
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+const AUTO_LABELS: Record<string, { label: string; tone: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  auto_verified: { label: 'Verified', tone: 'default' },
+  auto_applied: { label: 'Updated', tone: 'secondary' },
+  auto_hidden: { label: 'Hidden from map', tone: 'destructive' },
+  pending: { label: 'Partly updated — rest in review', tone: 'outline' },
+};
+
+const HIDDEN_FIELDS_IN_DIFF = new Set(['latitude', 'longitude', 'hidden', 'hidden_reason']);
+
+function AutoChangeCard({
+  check,
+  resource,
+  busy,
+  onUndo,
+}: {
+  check: VerificationCheck;
+  resource: FoodResource;
+  busy: boolean;
+  onUndo: () => void;
+}) {
+  const applied = (check.appliedChanges as Record<string, { before: unknown; after: unknown }> | null) ?? {};
+  const label = AUTO_LABELS[check.resolution] ?? { label: check.resolution, tone: 'outline' as const };
+  const diffs = Object.entries(applied).filter(([field]) => !HIDDEN_FIELDS_IN_DIFF.has(field));
+  const hiddenReason = applied.hidden_reason?.after as string | undefined;
+
+  return (
+    <Card className="p-4">
+      <div className="flex flex-wrap items-center gap-2 mb-1">
+        <h2 className="font-bold">{resource.name}</h2>
+        <Badge variant={label.tone}>{label.label}</Badge>
+        <span className="text-xs text-muted-foreground">
+          {check.checkedAt ? new Date(check.checkedAt).toLocaleDateString() : ''}
+        </span>
+      </div>
+      <p className="text-sm mb-2">{check.summary}</p>
+      {hiddenReason && <p className="text-sm mb-2 font-medium">{hiddenReason}</p>}
+      {diffs.length > 0 && (
+        <div className="text-sm space-y-1 mb-3">
+          {diffs.map(([field, change]) => (
+            <p key={field}>
+              <span className="font-medium">{FIELD_LABELS[field] ?? field}:</span>{' '}
+              <span className="text-muted-foreground line-through">{formatValue(change.before)}</span> →{' '}
+              <span>{formatValue(change.after)}</span>
+            </p>
+          ))}
+        </div>
+      )}
+      <details className="mb-3">
+        <summary className="cursor-pointer text-sm font-semibold">Evidence</summary>
+        <div className="mt-2">
+          <EvidenceList evidence={(check.evidence as Evidence[] | null) ?? []} />
+        </div>
+      </details>
+      {Object.keys(applied).length > 0 && (
+        <Button variant="outline" size="sm" disabled={busy} onClick={onUndo}>
+          Undo
+        </Button>
+      )}
+    </Card>
   );
 }
 
@@ -433,7 +543,7 @@ function ReviewCard({
           {conflicts.map((c, i) => (
             <p key={i}>
               {FIELD_LABELS[c.field] ?? c.field}: you confirmed <strong>{formatValue(c.confirmedValue)}</strong> on{' '}
-              {new Date(c.confirmedAt).toLocaleDateString()} ({CONFIRMED_VIA_LABELS[c.source as ConfirmedVia] ?? c.source}); the agent found{' '}
+              {new Date(c.confirmedAt).toLocaleDateString()} ({c.source === 'admin_undo' ? 'you undid an automatic change' : CONFIRMED_VIA_LABELS[c.source as ConfirmedVia] ?? c.source}); the agent found{' '}
               <strong>{formatValue(c.proposed)}</strong>.
             </p>
           ))}

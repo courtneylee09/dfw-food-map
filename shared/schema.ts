@@ -41,9 +41,12 @@ export const verificationChecks = pgTable("verification_checks", {
   evidence: jsonb("evidence"),
   proposedChanges: jsonb("proposed_changes"),
   conflicts: jsonb("conflicts"),
+  // What the agent changed automatically: { field: { before, after } }, for undo
+  appliedChanges: jsonb("applied_changes"),
   placesSnapshot: jsonb("places_snapshot"),
   error: text("error"),
-  // auto_verified | pending | approved | changes_applied | hidden | dismissed | superseded | error
+  // auto_verified | auto_applied | auto_hidden | unconfirmed | pending | approved | changes_applied
+  // | hidden | dismissed | superseded | reverted | error
   resolution: varchar("resolution", { length: 20 }).notNull(),
   resolvedAt: timestamp("resolved_at"),
   resolutionNote: text("resolution_note"),

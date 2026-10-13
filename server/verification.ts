@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "./db";
 import {
   fieldConfirmations,
@@ -42,14 +42,83 @@ export async function getReviewQueue(): Promise<ReviewItem[]> {
   return attachResources(pending);
 }
 
-export async function getRecentAutoVerified(limit = 50): Promise<ReviewItem[]> {
+// Everything the agent did on its own: verified, updated, or hidden
+export async function getAutomaticChanges(limit = 100): Promise<ReviewItem[]> {
   const checks: VerificationCheck[] = await db
     .select()
     .from(verificationChecks)
-    .where(eq(verificationChecks.resolution, "auto_verified"))
+    .where(
+      or(
+        inArray(verificationChecks.resolution, ["auto_verified", "auto_applied", "auto_hidden"]),
+        and(eq(verificationChecks.resolution, "pending"), isNotNull(verificationChecks.appliedChanges)),
+      ),
+    )
     .orderBy(desc(verificationChecks.checkedAt))
     .limit(limit);
   return attachResources(checks);
+}
+
+// Listings the agent couldn't confirm; visitors see "not recently confirmed"
+export async function getUnconfirmed(limit = 100): Promise<ReviewItem[]> {
+  const checks: VerificationCheck[] = await db
+    .select()
+    .from(verificationChecks)
+    .where(eq(verificationChecks.resolution, "unconfirmed"))
+    .orderBy(desc(verificationChecks.checkedAt))
+    .limit(limit);
+  return attachResources(checks);
+}
+
+const COLUMN_FOR_APPLIED: Record<string, keyof FoodResource> = {
+  hours: "hours",
+  phone: "phone",
+  address: "address",
+  website: "website",
+  appointment_required: "appointmentRequired",
+  notes: "notes",
+  latitude: "latitude",
+  longitude: "longitude",
+  hidden: "hidden",
+  hidden_reason: "hiddenReason",
+};
+
+// Restore the "before" values of an automatic change. Undone fields are logged as
+// admin decisions so the agent raises a conflict instead of re-applying them.
+export async function undoCheck(checkId: string, note?: string): Promise<void> {
+  const [check]: VerificationCheck[] = await db
+    .select()
+    .from(verificationChecks)
+    .where(eq(verificationChecks.id, checkId))
+    .limit(1);
+  if (!check) throw new ResolveError("Check not found", 404);
+  const applied = check.appliedChanges as Record<string, { before: unknown; after: unknown }> | null;
+  if (!applied || check.resolution === "reverted") throw new ResolveError("Nothing to undo for this check", 409);
+
+  const now = new Date();
+  const restore: Partial<FoodResource> = {};
+  for (const [field, change] of Object.entries(applied)) {
+    const column = COLUMN_FOR_APPLIED[field];
+    if (column) (restore as Record<string, unknown>)[column] = change.before;
+  }
+
+  await db.transaction(async (tx: typeof db) => {
+    await tx.update(foodResources).set(restore).where(eq(foodResources.id, check.resourceId));
+    for (const [field, change] of Object.entries(applied)) {
+      if (["latitude", "longitude", "hidden_reason"].includes(field)) continue;
+      await tx.insert(fieldConfirmations).values({
+        resourceId: check.resourceId,
+        field: field === "hidden" ? "status" : field,
+        value: field === "hidden" ? (change.before ? "closed" : "active") : change.before === null ? null : String(change.before),
+        source: "admin_undo",
+        note: note?.trim() || "Undid an automatic change",
+        confirmedAt: now,
+      });
+    }
+    await tx
+      .update(verificationChecks)
+      .set({ resolution: "reverted", resolvedAt: now, resolutionNote: note?.trim() || "Undone by admin" })
+      .where(eq(verificationChecks.id, checkId));
+  });
 }
 
 async function attachResources(checks: VerificationCheck[]): Promise<ReviewItem[]> {
@@ -70,7 +139,7 @@ async function attachResources(checks: VerificationCheck[]): Promise<ReviewItem[
     }));
 }
 
-async function geocode(address: string): Promise<{ lat: string; lng: string } | null> {
+export async function geocode(address: string): Promise<{ lat: string; lng: string } | null> {
   const apiKey = process.env.GEOAPIFY_API_KEY || process.env.VITE_GEOAPIFY_API_KEY;
   if (!apiKey) return null;
   const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&filter=countrycode:us&limit=1&apiKey=${apiKey}`;
@@ -102,7 +171,7 @@ export async function resolveCheck(
     .where(eq(verificationChecks.id, checkId))
     .limit(1);
   if (!check) throw new ResolveError("Check not found", 404);
-  if (check.resolution !== "pending") throw new ResolveError("This check was already resolved", 409);
+  if (!["pending", "unconfirmed"].includes(check.resolution)) throw new ResolveError("This check was already resolved", 409);
 
   const confirmedVia: ConfirmedVia = input.confirmedVia ?? "evidence";
   const isPrimary = PRIMARY_SOURCES.includes(confirmedVia);
@@ -175,6 +244,6 @@ export async function resolveCheck(
         resolvedAt: now,
         resolutionNote: [`confirmed via ${confirmedVia}`, input.note?.trim()].filter(Boolean).join(" — "),
       })
-      .where(and(eq(verificationChecks.id, checkId), eq(verificationChecks.resolution, "pending")));
+      .where(and(eq(verificationChecks.id, checkId), inArray(verificationChecks.resolution, ["pending", "unconfirmed"])));
   });
 }

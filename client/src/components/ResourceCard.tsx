@@ -5,6 +5,7 @@ import { FoodResource } from '@shared/schema';
 import { getDisplayHours } from '@shared/hours';
 import { formatDistanceMiles } from '@shared/distance';
 import { getCategoryColor } from '@/lib/categoryColors';
+import VerificationBadge from '@/components/VerificationBadge';
 
 interface ResourceCardProps {
   resource: FoodResource;
@@ -66,6 +67,7 @@ export default function ResourceCard({ resource, onClick, searchedZip }: Resourc
           <Clock className="w-4 h-4 flex-shrink-0" />
           <span data-testid={`text-hours-${resource.id}`}>{displayHours}</span>
         </div>
+        <VerificationBadge lastVerifiedDate={resource.lastVerifiedDate} />
         {resource.notes && (
           <div className="flex items-start gap-2 text-sm text-amber-900">
             <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />

@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "sweep = every listing once, weekly = top 25 by change-risk, daily = reports and new listings"
+        description: "sweep = every listing once, weekly = top 25 by change-risk, daily = reports and new listings, pending = re-run two-key approval on the review queue"
         type: choice
-        options: [weekly, daily, sweep]
+        options: [weekly, daily, sweep, pending]
         default: weekly
       dry_run:
         description: "Research only; don't change the database"
@@ -43,6 +43,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          GEOAPIFY_API_KEY: ${{ secrets.VITE_GEOAPIFY_API_KEY }}
           VERIFY_AUTO_APPROVE: "true"
           MODE: ${{ inputs.mode || (github.event.schedule == '0 11 * * 1' && 'weekly' || 'daily') }}
           DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
